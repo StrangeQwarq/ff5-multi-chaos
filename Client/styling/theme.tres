@@ -1,0 +1,63 @@
+[gd_resource type="Theme" load_steps=12 format=3 uid="uid://6wi045ghfygi"]
+
+[ext_resource type="FontFile" uid="uid://i8e1pdyijn00" path="res://8bitoperator_jve.ttf" id="1_8kexh"]
+[ext_resource type="StyleBox" uid="uid://rbif3o17pmpm" path="res://styling/button_hover.tres" id="2_26yl3"]
+[ext_resource type="StyleBox" uid="uid://dw8aws21k82d3" path="res://styling/button_style.tres" id="2_bba46"]
+[ext_resource type="StyleBox" uid="uid://bfrtlka3vm7g0" path="res://styling/checkbox_normal.tres" id="3_26yl3"]
+[ext_resource type="StyleBox" uid="uid://1ahjvbfbucek" path="res://styling/checkbox_checked.tres" id="4_pw3ru"]
+[ext_resource type="StyleBox" uid="uid://doxuwn5k4qcwr" path="res://styling/line_edit_style.tres" id="5_r4g5a"]
+
+[sub_resource type="Gradient" id="Gradient_cjfk0"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_vj6dk"]
+gradient = SubResource("Gradient_cjfk0")
+width = 16
+height = 16
+
+[sub_resource type="Gradient" id="Gradient_110ce"]
+offsets = PackedFloat32Array(0)
+colors = PackedColorArray(0.120767, 0.120442, 0.262359, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_05tig"]
+gradient = SubResource("Gradient_110ce")
+width = 16
+height = 16
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_bba46"]
+content_margin_right = 10.0
+
+[resource]
+Button/font_sizes/font_size = 20
+Button/fonts/font = ExtResource("1_8kexh")
+Button/styles/hover = ExtResource("2_26yl3")
+Button/styles/hover_pressed = ExtResource("2_26yl3")
+Button/styles/normal = ExtResource("2_bba46")
+Button/styles/pressed = ExtResource("2_bba46")
+CheckBox/icons/checked = SubResource("GradientTexture2D_vj6dk")
+CheckBox/icons/checked_disabled = SubResource("GradientTexture2D_05tig")
+CheckBox/styles/focus = ExtResource("3_26yl3")
+CheckBox/styles/hover = ExtResource("3_26yl3")
+CheckBox/styles/hover_pressed = ExtResource("4_pw3ru")
+CheckBox/styles/hover_pressed_mirrored = ExtResource("4_pw3ru")
+CheckBox/styles/normal = ExtResource("3_26yl3")
+CheckBox/styles/pressed = ExtResource("4_pw3ru")
+Label/colors/font_outline_color = Color(0, 0, 0, 0)
+Label/font_sizes/font_size = 19
+Label/fonts/font = ExtResource("1_8kexh")
+LineEdit/font_sizes/font_size = 20
+LineEdit/fonts/font = ExtResource("1_8kexh")
+LineEdit/styles/normal = ExtResource("5_r4g5a")
+OptionButton/constants/arrow_margin = 11
+OptionButton/font_sizes/font_size = 20
+OptionButton/styles/focus = ExtResource("5_r4g5a")
+OptionButton/styles/hover = ExtResource("5_r4g5a")
+OptionButton/styles/hover_pressed = ExtResource("5_r4g5a")
+OptionButton/styles/normal = ExtResource("5_r4g5a")
+OptionButton/styles/pressed = ExtResource("5_r4g5a")
+TextEdit/colors/font_readonly_color = Color(0.87451, 0.87451, 0.87451, 1)
+TextEdit/font_sizes/font_size = 20
+TextEdit/fonts/font = ExtResource("1_8kexh")
+TextEdit/styles/normal = ExtResource("5_r4g5a")
+TextEdit/styles/read_only = ExtResource("5_r4g5a")
+VScrollBar/styles/scroll = SubResource("StyleBoxEmpty_bba46")

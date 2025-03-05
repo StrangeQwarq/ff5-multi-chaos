@@ -1,0 +1,546 @@
+[gd_scene load_steps=12 format=3 uid="uid://bnovda8oahwrx"]
+
+[ext_resource type="Script" uid="uid://udywys6wnrhs" path="res://ff5_chaos.gd" id="1_wlhp2"]
+[ext_resource type="Theme" uid="uid://6wi045ghfygi" path="res://styling/theme.tres" id="2_j6bdw"]
+[ext_resource type="Texture2D" uid="uid://nnso4ftvabi4" path="res://img/sandworm.png" id="3_2l387"]
+
+[sub_resource type="Gradient" id="Gradient_7w75s"]
+colors = PackedColorArray(0.171881, 0.212183, 0.462769, 1, 0.0482033, 0.0481537, 0.268455, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_8ofji"]
+gradient = SubResource("Gradient_7w75s")
+width = 256
+height = 256
+fill_from = Vector2(0.986239, 0)
+fill_to = Vector2(1, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_vgyif"]
+font_size = 20
+
+[sub_resource type="LabelSettings" id="LabelSettings_mvqjw"]
+font_size = 26
+font_color = Color(0.172549, 1, 0.180392, 1)
+outline_size = 6
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="Animation" id="Animation_tyjs0"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(18, 20)]
+}
+
+[sub_resource type="Animation" id="Animation_8ofji"]
+resource_name = "hide"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(18, 20), Vector2(18, 70)]
+}
+
+[sub_resource type="Animation" id="Animation_1d1qo"]
+resource_name = "show"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(18, 70), Vector2(18, 20)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_w7pfe"]
+_data = {
+&"RESET": SubResource("Animation_tyjs0"),
+&"hide": SubResource("Animation_8ofji"),
+&"show": SubResource("Animation_1d1qo")
+}
+
+[node name="Node2D" type="Node2D"]
+script = ExtResource("1_wlhp2")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="TextureRect" type="TextureRect" parent="UI"]
+texture_filter = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -33.0
+offset_top = -27.0
+offset_right = 28.0
+offset_bottom = 31.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("GradientTexture2D_8ofji")
+
+[node name="Log" type="TextEdit" parent="UI"]
+texture_filter = 1
+clip_contents = false
+anchors_preset = -1
+anchor_left = 0.547
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -0.144043
+offset_top = 10.0
+offset_right = -26.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+theme = ExtResource("2_j6bdw")
+text = "Gamepad controls should map mostly 1:1
+------------------------------------
+Button indicators can be clicked to send input
+------------------------------------
+Keyboard Controls
+arrow keys -> SNES D-Pad
+X -> SNES A
+Z -> SNES B
+S -> SNES X
+A -> SNES Y
+Q -> SNES L
+W -> SNES R
+V -> SNES Start
+C -> SNES Select
+------------------------------------
+"
+editable = false
+emoji_menu_enabled = false
+selecting_enabled = false
+drag_and_drop_selection_enabled = false
+virtual_keyboard_enabled = false
+middle_mouse_paste_enabled = false
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI"]
+texture_filter = 1
+anchors_preset = -1
+anchor_top = 0.026
+anchor_right = 0.539
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 0.152
+offset_right = 0.0720215
+offset_bottom = -448.0
+theme_override_constants/separation = 6
+
+[node name="ServerIP" type="HBoxContainer" parent="UI/VBoxContainer"]
+texture_filter = 1
+layout_mode = 2
+
+[node name="ServerIPLabel" type="Label" parent="UI/VBoxContainer/ServerIP"]
+texture_filter = 1
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme = ExtResource("2_j6bdw")
+text = "Server IP Address: "
+
+[node name="ServerIPInput" type="LineEdit" parent="UI/VBoxContainer/ServerIP"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("2_j6bdw")
+text = "127.0.0.1"
+
+[node name="ServerPort" type="HBoxContainer" parent="UI/VBoxContainer"]
+texture_filter = 1
+layout_mode = 2
+
+[node name="ServerPortLabel" type="Label" parent="UI/VBoxContainer/ServerPort"]
+texture_filter = 1
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme = ExtResource("2_j6bdw")
+text = "Server Port: "
+
+[node name="ServerPortInput" type="LineEdit" parent="UI/VBoxContainer/ServerPort"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("2_j6bdw")
+text = "32024"
+max_length = 6
+
+[node name="Password" type="HBoxContainer" parent="UI/VBoxContainer"]
+texture_filter = 1
+layout_mode = 2
+
+[node name="PasswordLabel" type="Label" parent="UI/VBoxContainer/Password"]
+texture_filter = 1
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme = ExtResource("2_j6bdw")
+text = "Server Password:"
+
+[node name="PasswordInput" type="LineEdit" parent="UI/VBoxContainer/Password"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("2_j6bdw")
+
+[node name="PlayerName" type="HBoxContainer" parent="UI/VBoxContainer"]
+texture_filter = 1
+layout_mode = 2
+
+[node name="PlayerNameLabel" type="Label" parent="UI/VBoxContainer/PlayerName"]
+texture_filter = 1
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme = ExtResource("2_j6bdw")
+text = "Player Name: "
+
+[node name="PlayerNameInput" type="LineEdit" parent="UI/VBoxContainer/PlayerName"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("2_j6bdw")
+text = "Player"
+max_length = 6
+
+[node name="PreferredCharacter" type="HBoxContainer" parent="UI/VBoxContainer"]
+texture_filter = 1
+layout_mode = 2
+
+[node name="PreferredCharacterLabelLabel" type="Label" parent="UI/VBoxContainer/PreferredCharacter"]
+texture_filter = 1
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme = ExtResource("2_j6bdw")
+text = "Preferred Character
+"
+
+[node name="PreferredCharacterInput" type="OptionButton" parent="UI/VBoxContainer/PreferredCharacter"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+theme = ExtResource("2_j6bdw")
+selected = 2
+item_count = 4
+popup/item_0/text = "Bartz"
+popup/item_0/id = 1
+popup/item_1/text = "Lenna"
+popup/item_1/id = 2
+popup/item_2/text = "Galuf/Krile"
+popup/item_2/id = 3
+popup/item_3/text = "Faris"
+popup/item_3/id = 4
+
+[node name="Buttons" type="HBoxContainer" parent="UI"]
+texture_filter = 1
+anchors_preset = -1
+anchor_right = 0.54
+anchor_bottom = 1.0
+offset_left = 13.0
+offset_top = 196.0
+offset_right = 56.92
+offset_bottom = -398.0
+
+[node name="ConnectButton" type="Button" parent="UI/Buttons"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+theme = ExtResource("2_j6bdw")
+text = "Connect"
+
+[node name="DisconnectButton" type="Button" parent="UI/Buttons"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+theme = ExtResource("2_j6bdw")
+text = "Disconnect"
+
+[node name="Change Name" type="Button" parent="UI/Buttons"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+theme = ExtResource("2_j6bdw")
+text = "Update Player
+Name"
+
+[node name="ClearLog" type="Button" parent="UI/Buttons"]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 0
+theme = ExtResource("2_j6bdw")
+text = "Clear Log"
+
+[node name="ButtonSpacer" type="Control" parent="UI/Buttons"]
+custom_minimum_size = Vector2(50, 0)
+layout_mode = 2
+
+[node name="CharacterIndexLabel" type="Label" parent="UI"]
+texture_filter = 1
+anchors_preset = -1
+anchor_right = 0.544
+anchor_bottom = 1.0
+offset_left = 233.0
+offset_top = 266.0
+offset_right = -179.688
+offset_bottom = -354.0
+label_settings = SubResource("LabelSettings_vgyif")
+
+[node name="PlayerSprite" type="TextureRect" parent="UI/CharacterIndexLabel"]
+texture_filter = 1
+layout_mode = 0
+offset_left = -150.0
+offset_top = -1.0
+offset_right = -134.0
+offset_bottom = 23.0
+scale = Vector2(4, 4)
+
+[node name="ControlStatusLabel" type="Label" parent="UI"]
+texture_filter = 1
+custom_minimum_size = Vector2(300, 0)
+anchors_preset = -1
+anchor_right = 0.544
+anchor_bottom = 1.0
+offset_left = 199.0
+offset_top = 317.0
+offset_right = -127.688
+offset_bottom = -295.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+label_settings = SubResource("LabelSettings_mvqjw")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DisableInputCheckbox" type="CheckBox" parent="UI"]
+texture_filter = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 17.0
+offset_top = -66.0
+offset_right = 41.0
+offset_bottom = -42.0
+grow_vertical = 0
+scale = Vector2(1.5, 1.5)
+focus_mode = 0
+theme = ExtResource("2_j6bdw")
+
+[node name="DisableInputLabel" type="Label" parent="UI"]
+texture_filter = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 65.0
+offset_top = -60.935
+offset_right = 196.0
+offset_bottom = -35.935
+grow_vertical = 0
+theme = ExtResource("2_j6bdw")
+theme_override_font_sizes/font_size = 24
+text = "DISABLE INPUT"
+
+[node name="ControlDisplay" type="Control" parent="UI"]
+texture_filter = 1
+layout_mode = 3
+anchor_right = 0.544
+anchor_bottom = 1.0
+offset_left = 17.0
+offset_top = 382.0
+offset_right = -27.688
+offset_bottom = -49.0
+
+[node name="InputUp" type="Button" parent="UI/ControlDisplay"]
+texture_filter = 1
+layout_mode = 0
+offset_left = 114.0
+offset_top = 53.0
+offset_right = 164.0
+offset_bottom = 102.0
+focus_mode = 0
+theme = ExtResource("2_j6bdw")
+text = "Up"
+
+[node name="InputDown" type="Button" parent="UI/ControlDisplay"]
+texture_filter = 1
+layout_mode = 0
+offset_left = 114.0
+offset_top = 117.0
+offset_right = 164.0
+offset_bottom = 166.0
+focus_mode = 0
+theme = ExtResource("2_j6bdw")
+text = "Down"
+
+[node name="InputRight" type="Button" parent="UI/ControlDisplay"]
+texture_filter = 1
+layout_mode = 0
+offset_left = 172.0
+offset_top = 84.0
+offset_right = 222.0
+offset_bottom = 134.0
+focus_mode = 0
+theme = ExtResource("2_j6bdw")
+theme_override_font_sizes/font_size = 18
+text = "Right"
+
+[node name="InputLeft" type="Button" parent="UI/ControlDisplay"]
+texture_filter = 1
+layout_mode = 0
+offset_left = 54.0
+offset_top = 86.0
+offset_right = 104.0
+offset_bottom = 136.0
+focus_mode = 0
+theme = ExtResource("2_j6bdw")
+text = "Left"
+
+[node name="InputX" type="Button" parent="UI/ControlDisplay"]
+texture_filter = 1
+layout_mode = 0
+offset_left = 409.0
+offset_top = 52.0
+offset_right = 459.0
+offset_bottom = 101.0
+focus_mode = 0
+theme = ExtResource("2_j6bdw")
+text = "X"
+
+[node name="InputB" type="Button" parent="UI/ControlDisplay"]
+texture_filter = 1
+layout_mode = 0
+offset_left = 409.0
+offset_top = 116.0
+offset_right = 459.0
+offset_bottom = 165.0
+focus_mode = 0
+theme = ExtResource("2_j6bdw")
+text = "B"
+
+[node name="InputA" type="Button" parent="UI/ControlDisplay"]
+texture_filter = 1
+layout_mode = 0
+offset_left = 468.0
+offset_top = 84.0
+offset_right = 518.0
+offset_bottom = 134.0
+focus_mode = 0
+theme = ExtResource("2_j6bdw")
+text = "A"
+
+[node name="InputY" type="Button" parent="UI/ControlDisplay"]
+texture_filter = 1
+layout_mode = 0
+offset_left = 350.0
+offset_top = 86.0
+offset_right = 400.0
+offset_bottom = 136.0
+focus_mode = 0
+theme = ExtResource("2_j6bdw")
+text = "Y"
+
+[node name="InputStart" type="Button" parent="UI/ControlDisplay"]
+texture_filter = 1
+layout_mode = 0
+offset_left = 320.0
+offset_top = 154.0
+offset_right = 370.0
+offset_bottom = 204.0
+focus_mode = 0
+theme = ExtResource("2_j6bdw")
+theme_override_font_sizes/font_size = 18
+text = "Start"
+
+[node name="InputSelect" type="Button" parent="UI/ControlDisplay"]
+texture_filter = 1
+layout_mode = 0
+offset_left = 202.0
+offset_top = 156.0
+offset_right = 256.0
+offset_bottom = 205.0
+focus_mode = 0
+theme = ExtResource("2_j6bdw")
+theme_override_font_sizes/font_size = 16
+text = "Select"
+
+[node name="InputR" type="Button" parent="UI/ControlDisplay"]
+texture_filter = 1
+layout_mode = 0
+offset_left = 320.0
+offset_top = -2.0
+offset_right = 370.0
+offset_bottom = 48.0
+focus_mode = 0
+theme = ExtResource("2_j6bdw")
+text = "R"
+
+[node name="InputL" type="Button" parent="UI/ControlDisplay"]
+texture_filter = 1
+layout_mode = 0
+offset_left = 202.0
+offset_top = -1.0
+offset_right = 252.0
+offset_bottom = 49.0
+focus_mode = 0
+theme = ExtResource("2_j6bdw")
+text = "L"
+
+[node name="Control" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -46.0
+offset_top = -40.0
+offset_right = -6.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="Sprite2D" type="Sprite2D" parent="UI/Control"]
+texture_filter = 1
+position = Vector2(18, 20)
+scale = Vector2(0.335969, 0.335969)
+texture = ExtResource("3_2l387")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="UI/Control/Sprite2D"]
+libraries = {
+&"": SubResource("AnimationLibrary_w7pfe")
+}
+
+[node name="SandwormButton" type="Button" parent="UI"]
+modulate = Color(1, 1, 1, 0)
+texture_filter = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -49.0
+offset_top = -48.0
+offset_right = -5.0
+offset_bottom = -4.0
+
+[connection signal="text_submitted" from="UI/VBoxContainer/PlayerName/PlayerNameInput" to="." method="_on_player_name_input_text_submitted"]
+[connection signal="pressed" from="UI/Buttons/ConnectButton" to="." method="_on_connect_button_pressed"]
+[connection signal="pressed" from="UI/Buttons/DisconnectButton" to="." method="_on_disconnect_button_pressed"]
+[connection signal="pressed" from="UI/Buttons/Change Name" to="." method="_on_change_name_pressed"]
+[connection signal="pressed" from="UI/Buttons/ClearLog" to="." method="_on_clear_log_pressed"]
+[connection signal="pressed" from="UI/SandwormButton" to="." method="_on_sandworm_button_pressed"]
