@@ -1,7 +1,5 @@
 local socket = require("socket")
 
--- after game over, still reports as in battle
--- occasional double input with high latency
 
 -- binds to a port and accepts connections
 local server = nil
@@ -402,7 +400,7 @@ function process_input()
 end
 
 function process_mods()
-	if low_encounter_rate and was_in_battle then
+	if low_encounter_rate and not was_in_battle then
 		memory.write_u8(0x7E16A9, 1)
 	end
 end
