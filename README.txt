@@ -79,3 +79,25 @@ Since the client will read inputs even if the window isn't focused, it will pick
 key presses when you might not intend. If you need to type elsewhere using your keyboard,
 the Disable Input button in the bottom left will prevent any input from going through
 while it's checked.
+
+---------------------------------------------
+
+Control Logic:
+
+Each player loses and gains control at certain times. Outside of battle all players are
+in control. In battle control is a little more complex.
+
+- If the player's character's turn is active, they gain control
+- If there is no player for a character (e.g. there are 3 players and no one is assigned
+  to Faris), then all players have control.
+- If a player takes too long to finish their turn (20 seconds currently), then all players
+  gain control for that turn.
+  
+---------------------------------------------
+
+Planned Changes:
+
+When players participate in a winning battle each character is awarded some number of points
+based on the EXP and Gil obtained from the battle. These points can later be redeemed for
+various bonuses like extra EXP, ABP, temporary buffs, heals, MP recovery, status recovery
+and more.

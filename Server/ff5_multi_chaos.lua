@@ -65,7 +65,7 @@ local battle_encounter_id_addr = 0x7E04F0
 local names_base_addr = 0x7E0990
 
 -- indicates the position of the character that's active, 0x180 and smaller means a player
-local active_character_index_addr = 0x7E010D --0x7E0032
+local active_character_index_addr = 0x7E010D
 
 -- allows 10 seconds of no reponse from the client before kicking them
 local player_timeout_threshold = 10000
@@ -91,8 +91,6 @@ local current_enemy_formation = 0
 -- handle to the window
 local control_form = forms.newform(250, 260, "FF5 Multi-Chaos Control Panel")
 
--- encounter counter 0x7e16a9
-
 -- handle to the textbox for setting the port
 local port_textbox = forms.textbox(control_form, "32024", 100, 30, "UNSIGNED", 10, 30, false)
 local port_label   = forms.label(control_form, "Server Port", 10, 10, 100, 20)
@@ -105,6 +103,7 @@ local password_label   = forms.label(control_form, "Server Password", 120, 10, 1
 local red_label = forms.createcolor(200, 30, 30, 255)
 local green_label = forms.createcolor(30, 200, 30, 255)
 
+-- label showing whether the server is online
 local server_status_label = forms.label(control_form, "Server Offline", 10, 170, 200, 20)
 forms.setproperty(server_status_label, "ForeColor", red_label)
 forms.setproperty(server_status_label, "TextAlign", 2)
@@ -112,65 +111,13 @@ forms.setproperty(server_status_label, "TextAlign", 2)
 -- buttons used to kick players
 local kick_buttons = {["Bartz"] = nil, ["Lenna"] = nil, ["Galuf"] = nil, ["Faris"] = nil}
 
+-- checkbox to toggle low encounter rate
 local low_encounter_rate = false
-forms.label(control_form, "Lower Encounter Rate", 25, 195, 200, 20)
+local low_encounter_rate_label = forms.label(control_form, "Lower Encounter Rate", 25, 195, 200, 20)
 local encounter_rate_checkbox = forms.checkbox(control_form, "", 10, 190)
 forms.addclick(encounter_rate_checkbox, function()
 	low_encounter_rate = not low_encounter_rate
 end)
-
--- dummy out the bizhawk tables when testing outisde of bizhawk
-if emu == nil then
-	emu = {}
-	function emu.frameadvance()
-		socket.sleep(0.1)
-	end
-end
-
-if gameinfo == nil then
-	gameinfo = {}
-	function gameinfo.getromhash()
-		return "x"
-	end
-end
-
-if joypad == nil then
-	joypad = {}
-	function joypad.set(t)
-	   return
-	end
-end
-
-if bit == nil then
-	bit = {}
-	function bit.band(val, val2)
-	   return val
-	end
-
-	function bit.bor(val, val2)
-		return val
-	end
-end
-
-if memory == nil then
-	memory = {}
-	function memory.read_u8(addr)
-		return 0
-	end
-
-	function memory.read_u16_be(addr)
-		return 666
-	end
-
-	function memory.read_u16_le(addr)
-		return 666
-	end
-
-	function memory.write_u8(addr, val)
-		return
-	end
-end
-
 
 -- loops through each player to process their messages
 function handle_all_players()
@@ -186,6 +133,7 @@ function connect()
 	server:settimeout(0)
 
 	local new_client, timeout = server:accept()
+
 	if timeout == nil then
 		print('Initial Connection Made')
 		if pending_client == nil and new_client ~= nil then
@@ -216,7 +164,6 @@ function connect()
 					pending_client:send("DF" .. "\n") -- disconnect:full
 					pending_client:close()
 					pending_client = nil
-					show_players()
 				else
 					local new_player = create_player(player_index, pending_client)
 					new_player["socket"]:settimeout(0)
@@ -297,7 +244,6 @@ function handle_player(index)
 			-- disconnect
 			print("Player " .. index .. " manual disconnect")
 			disconnect_player(index)
-			show_players()
 		end
 	else
 		local time_since_last_data = get_ms_time() - player["last_received"]
@@ -305,10 +251,9 @@ function handle_player(index)
 			-- exceeded the input update interval. assume no input to avoid extending button presses
 			player["inputs"] = 0
 		elseif time_since_last_data >= player_timeout_threshold then
-			-- no data received. see if the player has timed out
+			-- no data received in quite a while. disconnect the player
 			print("Player " .. index .. " timeout")
 			disconnect_player(index, "T")
-		show_players()
 		end
 	end
 end
@@ -359,6 +304,7 @@ function process_input()
 	-- who's in control calculated for this frame
 	local current_control_bits = 0
 
+	-- consolidate the inputs from each player that's in control
 	for index, player in pairs(players) do
 		local is_active_character = active_character_index == index
 		local active_character_has_player = players[active_character_index] ~= nil
@@ -613,6 +559,7 @@ function draw_single_input(x, y, text, input, bitmask)
 
 	gui.text(x, y, text, color)
 end
+
 -------------------------------------------
 -- Host control form stuff
 
