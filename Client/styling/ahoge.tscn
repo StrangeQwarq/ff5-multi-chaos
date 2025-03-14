@@ -1,0 +1,76 @@
+[gd_scene load_steps=6 format=3 uid="uid://wobo6u7n4p8y"]
+
+[ext_resource type="Script" uid="uid://yqp7s4cfmco6" path="res://ahoge.gd" id="1_a48xh"]
+[ext_resource type="Texture2D" uid="uid://jtxx4ml4ier1" path="res://digi_nohoge.png" id="2_00wb0"]
+[ext_resource type="Texture2D" uid="uid://dmvdwl6qj01tm" path="res://digi_ahoge.png" id="3_rhw1k"]
+
+[sub_resource type="SkeletonModification2DJiggle" id="SkeletonModification2DJiggle_a48xh"]
+
+[sub_resource type="SkeletonModificationStack2D" id="SkeletonModificationStack2D_00wb0"]
+enabled = true
+modification_count = 1
+modifications/0 = SubResource("SkeletonModification2DJiggle_a48xh")
+
+[node name="Node2D" type="Node2D"]
+script = ExtResource("1_a48xh")
+
+[node name="DigiNohoge" type="Sprite2D" parent="."]
+visible = false
+texture_filter = 1
+position = Vector2(554, 325)
+texture = ExtResource("2_00wb0")
+
+[node name="DigiAhoge" type="Sprite2D" parent="."]
+visible = false
+texture_filter = 1
+position = Vector2(548, 274)
+texture = ExtResource("3_rhw1k")
+offset = Vector2(3.73, -11.875)
+
+[node name="HSlider" type="HSlider" parent="."]
+offset_left = 493.0
+offset_top = 423.0
+offset_right = 606.0
+offset_bottom = 439.0
+min_value = 0.5
+max_value = 5.0
+step = 0.0
+value = 0.5
+
+[node name="Label" type="Label" parent="HSlider"]
+layout_mode = 0
+offset_left = 15.0
+offset_top = 17.0
+offset_right = 98.0
+offset_bottom = 40.0
+text = "Ahoge Size"
+
+[node name="Skeleton2D" type="Skeleton2D" parent="."]
+modification_stack = SubResource("SkeletonModificationStack2D_00wb0")
+
+[node name="head" type="Bone2D" parent="Skeleton2D"]
+position = Vector2(545, 289)
+rotation = -1.60433
+rest = Transform2D(-0.0335305, -0.999438, 0.999438, -0.0335305, 546, 289)
+
+[node name="ahoge" type="Bone2D" parent="Skeleton2D/head"]
+position = Vector2(15.9575, 1.53593)
+rest = Transform2D(1, 0, 0, 1, 15.9575, 1.53593)
+
+[node name="Nohoge" type="Polygon2D" parent="."]
+position = Vector2(480, 252)
+texture = ExtResource("2_00wb0")
+skeleton = NodePath("../Skeleton2D")
+polygon = PackedVector2Array(42, 11, -7, 138, 127, 161, 145, 47, 96, 8)
+uv = PackedVector2Array(39.3333, 11.733, -7, 138, 127, 161, 145, 47, 96, 8)
+bones = ["head", PackedFloat32Array(0, 0, 0, 0, 0), "head/ahoge", PackedFloat32Array(0.5, 0.5, 0.5, 0.5, 0.5)]
+
+[node name="Ahoge" type="Polygon2D" parent="."]
+position = Vector2(539, 253)
+texture = ExtResource("3_rhw1k")
+skeleton = NodePath("../Skeleton2D")
+polygon = PackedVector2Array(-3, 16, 12, 29, 29, 10, 25, -3, -6, 0)
+bones = ["head", PackedFloat32Array(0, 0, 0, 0, 0), "head/ahoge", PackedFloat32Array(0.5, 0.5, 0.5, 0.5, 0.5)]
+
+[connection signal="changed" from="HSlider" to="." method="_on_h_slider_changed"]
+[connection signal="value_changed" from="HSlider" to="." method="_on_h_slider_value_changed"]

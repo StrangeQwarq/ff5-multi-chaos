@@ -1,5 +1,5 @@
 local socket = require("socket")
-
+local shop_item_customized = require("effects")
 
 -- binds to a port and accepts connections
 local server = nil
@@ -21,6 +21,13 @@ local character_names = {"Bartz", "Lenna", "Galuf", "Faris"}
 
 -- max number of characters for player names
 local max_player_name_size = 6
+
+-- how many players are current connected to the server
+local num_players_connected = 0
+
+local character_points_file_path = ""
+-- number of GregBux owned by each character
+local character_points = {["Bartz"] = 10, ["Lenna"] = 11, ["Galuf"] = 12, ["Faris"] = 13}
 
 -- table of all active players. values be nil if no player is connected
 local players = {["Bartz"] = nil, ["Lenna"] = nil, ["Galuf"] = nil, ["Faris"] = nil}
@@ -55,8 +62,9 @@ local lower_offset = 0x7A
 -- starting value for numeric letters
 local number_offset = 0x53
 
--- battle status. 0x0 = in battle, other values indicate battle results
-local battle_status_addr = 0x7E7BDE
+-- byte value is 0x10 when in battle and 0x0 when out of battle
+-- i'm not sure what this value represents but it's more consistent than the battle status
+local battle_status_addr = 0x7E014D --0x7E7BDE
 
 -- address of the current encounter. up to 0x1FF is valid, only valid in battle.
 local battle_encounter_id_addr = 0x7E04F0
@@ -66,6 +74,12 @@ local names_base_addr = 0x7E0990
 
 -- indicates the position of the character that's active, 0x180 and smaller means a player
 local active_character_index_addr = 0x7E010D
+
+local player_1_innate_abilities_addr = 0x7E0520
+
+local character_battle_data_size = 0x80
+
+local character_world_data_size = 0x50
 
 -- allows 10 seconds of no reponse from the client before kicking them
 local player_timeout_threshold = 10000
@@ -89,7 +103,7 @@ local control_bits = 0
 local current_enemy_formation = 0
 
 -- handle to the window
-local control_form = forms.newform(250, 260, "FF5 Multi-Chaos Control Panel")
+local control_form = forms.newform(250, 300, "FF5 Multi-Chaos Control Panel")
 
 -- handle to the textbox for setting the port
 local port_textbox = forms.textbox(control_form, "32024", 100, 30, "UNSIGNED", 10, 30, false)
@@ -113,11 +127,224 @@ local kick_buttons = {["Bartz"] = nil, ["Lenna"] = nil, ["Galuf"] = nil, ["Faris
 
 -- checkbox to toggle low encounter rate
 local low_encounter_rate = false
-local low_encounter_rate_label = forms.label(control_form, "Lower Encounter Rate", 25, 195, 200, 20)
-local encounter_rate_checkbox = forms.checkbox(control_form, "", 10, 190)
+--local low_encounter_rate_label = forms.label(control_form, "", 25, 195, 200, 20)
+local encounter_rate_checkbox = forms.checkbox(control_form, "Fewer Battles", 10, 190)
 forms.addclick(encounter_rate_checkbox, function()
 	low_encounter_rate = not low_encounter_rate
 end)
+
+-- checkbox to toggle input display
+local show_input = false
+local show_input_checkbox = forms.checkbox(control_form, "Show Input", 10, 210)
+forms.addclick(show_input_checkbox, function()
+	show_input = not show_input
+end)
+
+local character_points_labels = {
+	Bartz = forms.label(control_form, "Bartz: 0 points", 130, 190, 110, 15),
+	Lenna = forms.label(control_form, "Lenna: 0 points", 130, 205, 110, 15),
+	Galuf = forms.label(control_form, "Galuf: 0 points", 130, 220, 110, 15),
+	Faris = forms.label(control_form, "Faris: 0 points", 130, 235, 110, 15),
+}
+
+-- data for each positive status. first element is the status type offset, second is the bit in that byte
+local statuses = {
+	float   = {0x1A, 0x08},
+	mini    = {0x1A, 0x10},
+	berserk = {0x1B, 0x08},
+	blink   = {0x1B, 0x02},
+	haste   = {0x1C, 0x08},
+	shell   = {0x1C, 0x20},
+	protect = {0x1C, 0x40},
+	reflect = {0x1C, 0x80},
+	regen   = {0x1C, 0x01},
+}
+
+-- sets a player's status
+function set_status(character_index, status)
+	local start_addr = 0x7E2000
+	local character_battle_data_addr = start_addr + (character_battle_data_size * character_index)
+	local status_addr = character_battle_data_addr + status[1]
+	local current_status = memory.read_u8(status_addr)
+	memory.write_u8(status_addr, bit.bor(current_status, status[2]))
+end
+
+-- serialized version of shop_items (minus func). set when the script starts
+local shop_data_text = ""
+
+local shop_items = {
+	["exp"] = {
+		cost = 5,
+		name = "EXP+",
+		desc = "Gives some extra EXP based on your level (level ups won't happen until the end of the next battle)",
+		func = function(player)
+			local character_index = character_indexes[player["player_index"]]
+			local character_data_offset = (character_index * character_world_data_size)
+			local player_level = memory.read_u8(0x7E0502 + character_data_offset)
+			local current_exp_addr = 0x7E0503 + character_data_offset
+			local current_exp = memory.read_u24_le(current_exp_addr)
+			local bonus_exp = player_level * player_level * player_level
+
+			memory.write_u24_le(current_exp_addr, current_exp + bonus_exp)
+		end
+	},
+	["abp"] = {
+		cost = 5,
+		name = "ABP+",
+		desc = "Gives 10 ABP for your current job (job level ups won't happen until the end of the next battle)",
+		func = function(player)
+			local abp_bonus = 10
+			local character_index = character_indexes[player["player_index"]]
+			local abp_addr = 0x7E053B + (character_index * character_world_data_size)
+			local current_abp = memory.read_u16_le(abp_addr)
+			memory.write_u16_le(abp_addr, current_abp + abp_bonus)
+		end
+	},
+	["heal"] = {
+		cost = 5,
+		name = "HEAL",
+		desc = "Recovers 25% of max hp",
+		func = function(player)
+			local character_index = character_indexes[player["player_index"]]
+			local current_hp_addr = 0x7E0506 + (character_index * character_world_data_size)
+			local max_hp_addr = current_hp_addr + 3
+			local current_hp = memory.read_u16_le(current_hp_addr)
+			local max_hp = memory.read_u16_le(max_hp_addr)
+
+			current_hp = math.min(current_hp + (current_hp * 0.25), max_hp)
+			memory.write_u16_le(abp_addr, current_hp)
+		end
+	},
+	["mp_recovery"] = {
+		cost = 5,
+		name = "MP RECOVER",
+		desc = "Recovers 25% of max mp",
+		func = function(player)
+			local character_index = character_indexes[player["player_index"]]
+			local current_mp_addr = 0x7E050A + (character_index * character_world_data_size)
+			local max_mp_addr = current_mp_addr + 3
+			local current_mp = memory.read_u16_le(current_mp_addr)
+			local max_mp = memory.read_u16_le(max_mp_addr)
+
+			current_mp = math.min(current_mp + (current_mp * 0.25), max_mp)
+			memory.write_u16_le(abp_addr, current_mp)
+		end
+	},
+	["haste"] = {
+		cost = 5,
+		name = "HASTE",
+		desc = "Get hasted. Only available in battle",
+		func = function(player)
+			if not is_in_battle() then
+				return false
+			end
+
+			local character_name = player["player_index"]
+			local index = character_indexes[character_name]
+			set_status(index, statuses.haste)
+		end
+	},
+	["protect"] = {
+		cost = 5,
+		name = "PROTECT",
+		desc = "Cast protect on yourself (half physical damage). Only available in battle",
+		func = function(player)
+			if not is_in_battle() then
+				return false
+			end
+
+			local character_name = player["player_index"]
+			local index = character_indexes[character_name]
+			set_status(index, statuses.protect)
+		end
+	},
+	["shell"] = {
+		cost = 5,
+		name = "SHELL",
+		desc = "Cast shell on yourself (half magic damage). Only available in battle",
+		func = function(player)
+			if not is_in_battle() then
+				return false
+			end
+
+			local character_name = player["player_index"]
+			local index = character_indexes[character_name]
+			set_status(index, statuses.shell)
+		end
+	},
+	["reflect"] = {
+		cost = 5,
+		name = "REFLECT",
+		desc = "Cast reflect on yourself (bounces spells to enemies). Only available in battle",
+		func = function(player)
+			if not is_in_battle() then
+				return false
+			end
+
+			local character_name = player["player_index"]
+			local index = character_indexes[character_name]
+			set_status(index, statuses.reflect)
+		end
+	}
+	--["status_heal"] = {
+	--	cost = 5,
+	--	name = "STATUS HEAL",
+	--	desc = "Removes most negative status effects",
+	--	func = function(player)
+	--		-- petrify, toad, poison, zombie, darkness
+	--		-- maybe need to do a heal if zombie?
+	--		-- curable status 0x40 + 0x20 + 0x10 + 0x04 + 0x02 + 0x01
+	--
+	--		-- aging, sleep, paralyze, charm, berserk, mute
+	--		-- temporary status 0x80 + 0x40 + 0x20 + 0x10 + 0x08 + 0x04
+	--
+	--		-- stop, slow
+	--		-- dispellable status 0x10 + 0x04
+	--	end
+	--}
+}
+
+for key, value in pairs(shop_item_customized) do
+	if shop_items[key] ~= nil then
+		if value.enabled ~= nil then
+			shop_items[key].enabled = value.enabled
+		end
+		if value.cost ~= nil then
+			shop_items[key].cost = tonumber(value.cost)
+		end
+	end
+end
+
+print(shop_items)
+function get_ms_time()
+	return socket.gettime() * 1000
+end
+
+function serialize_shop_data()
+	local data = ""
+	for key, value in pairs(shop_items) do
+		if (value ~= nil and value.enabled ~= false) then
+			data = data .. key .. "|" .. value.cost .. "|" .. value.desc .. "|" .. value.name .. "@"
+		end
+	end
+
+	return data
+end
+
+function award_points(add_amount, awarded_to)
+	for character_name, current_amount in pairs(character_points) do
+		if character_name == awarded_to or awarded_to == nil then
+			character_points[character_name] = current_amount + add_amount
+			local player = players[character_name]
+			if player ~= nil then
+				player.socket:send("M" .. character_points[character_name] .. "\n")
+			end
+		end
+	end
+
+	update_point_labels()
+	write_character_points()
+end
 
 -- loops through each player to process their messages
 function handle_all_players()
@@ -141,7 +368,7 @@ function connect()
 			pending_client = new_client
 			pending_client_connect_time = get_ms_time()
 		elseif new_client ~= nil then
-			new_client:send("DF")
+			new_client:send("DF\n")
 			new_client:close()
 		end
 	end
@@ -166,8 +393,10 @@ function connect()
 					pending_client = nil
 				else
 					local new_player = create_player(player_index, pending_client)
-					new_player["socket"]:settimeout(0)
-					new_player["socket"]:send("C" .. player_index .. "\n")
+					new_player.socket:settimeout(0)
+					new_player.socket:send("C" .. player_index .. "\n")
+					new_player.socket:send("S" .. shop_data_text .. "\n")
+					new_player.socket:send("M" .. character_points[player_index] .. "\n")
 					players[player_index] = new_player
 
 					print("Player " .. player_index .. " connected")
@@ -185,7 +414,7 @@ end
 
 function create_player(index, socket)
 	local new_player = {}
-	new_player["socket"]        = socket
+	new_player.socket        = socket
 	new_player["name"]          = "Player " .. index
 	new_player["last_received"] = get_ms_time()
 	new_player["last_updated"]  = get_ms_time()
@@ -199,9 +428,9 @@ function disconnect_player(index, code)
 	local player = players[index]
 	if player ~= nil then
 		if code ~= nil then
-			player["socket"]:send("D" .. code .. "\n")
+			player.socket:send("D" .. code .. "\n")
 		end
-		player["socket"]:close()
+		player.socket:close()
 		players[index] = nil
 
 		update_kick_buttons()
@@ -215,14 +444,14 @@ function handle_player(index)
 
 	if not err then
 		-- received something from the player
-		player["last_received"] = get_ms_time()
+		player.last_received = get_ms_time()
 		local command_type = string.sub(data, 0, 1)
 
 		if command_type == "I" then
 			-- inputs
-			player["inputs"] = tonumber(string.sub(data, 2, -1))
-			if player["inputs"] == nil then
-				player["inputs"] = nil
+			player.inputs = tonumber(string.sub(data, 2, -1))
+			if player.inputs == nil then
+				player.inputs = nil
 			end
 		elseif command_type == "R" then
 			-- request a specific character
@@ -233,9 +462,24 @@ function handle_player(index)
 				-- requested a character and the slot is available. swap them
 				players[requested_character_name] = player
 				players[index] = nil
-				player["socket"]:send("C" .. requested_character_name .. "\n")
+				players[requested_character_name]["player_index"] = requested_character_name
+				player.socket:send("C" .. requested_character_name .. "\n")
+				player.socket:send("M" .. character_points[requested_character_name] .. "\n")
 				update_kick_buttons()
 			end
+		elseif command_type == "B" then
+			-- buying something from the shop
+			local item_id = string.sub(data, 2, -1)
+			local item = shop_items[item_id]
+			local character_bux = character_points[index]
+			if item and item.cost <= character_bux then
+				local result = item["func"](players[index])
+				if (result ~= false) then
+					print(index .." bought " .. item_id)
+					award_points(-1 * item.cost, index)
+				end
+			end
+			update_point_labels()
 		elseif command_type == "N" then
 			local name = string.sub(data, 2, max_player_name_size + 1)
 			set_player_name(index, name)
@@ -244,13 +488,16 @@ function handle_player(index)
 			-- disconnect
 			print("Player " .. index .. " manual disconnect")
 			disconnect_player(index)
+		elseif command_type == "B" then
+			-- buy something from the shop
 		end
 	else
 		local time_since_last_data = get_ms_time() - player["last_received"]
 		if time_since_last_data >= player_input_timeout then
 			-- exceeded the input update interval. assume no input to avoid extending button presses
 			player["inputs"] = 0
-		elseif time_since_last_data >= player_timeout_threshold then
+		end
+		if time_since_last_data >= player_timeout_threshold then
 			-- no data received in quite a while. disconnect the player
 			print("Player " .. index .. " timeout")
 			disconnect_player(index, "T")
@@ -268,6 +515,7 @@ function process_input()
 	-- battle just started
 	if in_battle and not was_in_battle then
 		print("Battle Start")
+		award_points(1)
 	end
 
 	-- battle just ended
@@ -330,24 +578,62 @@ function process_input()
 		control_bits = current_control_bits
 	end
 
-	local has_players = false
+	num_players_connected = 0
 	for _, value in pairs(players) do
 		if value ~= nil then
-			has_players = true
+			num_players_connected = num_players_connected + 1
 		end
 	end
 
 	-- if no one is connected let the host control the game directly
-	if has_players then
+	if num_players_connected > 0 then
 		local inputs_table = generate_inputs_table(final_input)
 		joypad.set(inputs_table, 1)
-		draw_inputs()
+
+		if show_input then
+			draw_inputs()
+		end
 	end
 end
 
 function process_mods()
 	if low_encounter_rate and not was_in_battle then
 		memory.write_u8(0x7E16A9, 1)
+	end
+
+	-- always give the dash ability
+	local innate = memory.read_u8(player_1_innate_abilities_addr)
+	memory.write_u8(player_1_innate_abilities_addr, bit.bor(innate, 0x08))
+end
+
+local video_enabled = false
+local frames_per_second = 10
+local last_frame_time = get_ms_time()
+local video_enabled_checkbox = forms.checkbox(control_form, "Send Video", 10, 230)
+
+forms.addclick(video_enabled_checkbox, function()
+	video_enabled = not video_enabled
+end)
+
+function process_video()
+	if video_enabled and num_players_connected > 0 and get_ms_time() - last_frame_time > 1000 / frames_per_second then
+		last_frame_time = get_ms_time()
+		local frame_file_path = "img/sc.png"
+		client.screenshot(frame_file_path)
+		local file = io.open(frame_file_path, "rb")
+		if file then
+			local image_data = file:read("*all")
+			--print(image_data)
+			--video_enabled = false
+			send_frame(image_data)
+			--file:close()
+		end
+	end
+end
+
+function send_frame(frame_data)
+	for _, player in pairs(players) do
+		player.socket:send(frame_data)
 	end
 end
 
@@ -394,7 +680,7 @@ function send_control_updates(bits)
 				control_value = "1"
 			end
 
-			player["socket"]:send("I" .. control_value .. "\n")
+			player.socket:send("I" .. control_value .. "\n")
 		end
 	end
 end
@@ -414,10 +700,6 @@ function get_active_character_index()
 	end
 
 	return active_character_index
-end
-
-function get_ms_time()
-	return socket.gettime() * 1000
 end
 
 function show_players()
@@ -442,10 +724,7 @@ end
 -- whether the party is currently in battle
 function is_in_battle()
 	local battle_status = memory.read_u8(battle_status_addr)
-	local encounter_id  = memory.read_u16_le(battle_encounter_id_addr)
-	current_enemy_formation = encounter_id
-
-	return battle_status == 0 and encounter_id <= 0x1FF
+	return battle_status ~= 0
 end
 
 -- updates the character's name in-game
@@ -477,6 +756,28 @@ function set_player_name(index, name)
 	end
 
 	update_kick_buttons()
+end
+
+function load_character_points()
+	local points_file = io.open("character_points.dat", "r")
+	character_points["Bartz"] = tonumber(points_file:read("*l"))
+	character_points["Lenna"] = tonumber(points_file:read("*l"))
+	character_points["Galuf"] = tonumber(points_file:read("*l"))
+	character_points["Faris"] = tonumber(points_file:read("*l"))
+end
+
+function write_character_points()
+	local points_file = io.open("character_points.dat", "w")
+	points_file:write(character_points["Bartz"] .. "\n")
+	points_file:write(character_points["Lenna"] .. "\n")
+	points_file:write(character_points["Galuf"] .. "\n")
+	points_file:write(character_points["Faris"] .. "\n")
+end
+
+function update_point_labels()
+	for character_name, label in pairs(character_points_labels) do
+		forms.settext(label, character_name .. ": " .. character_points[character_name] .. " points")
+	end
 end
 
 -- update the buttons on the control panel to show current character/player names
@@ -619,7 +920,7 @@ function stop_server()
 	end
 
 	for index, player in pairs(players) do
-		player["socket"]:close()
+		player.socket:close()
 		players[index] = nil
 	end
 
@@ -645,12 +946,17 @@ function main()
 		end
 	end
 
+	shop_data_text = serialize_shop_data()
+	load_character_points()
+	update_point_labels()
+
 	while true do
 		if server ~= nil then
 			handle_all_players()
 			connect()
 			process_input()
 			process_mods()
+			process_video()
 		end
 
 		emu.frameadvance()

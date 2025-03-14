@@ -1,8 +1,9 @@
-[gd_scene load_steps=12 format=3 uid="uid://bnovda8oahwrx"]
+[gd_scene load_steps=15 format=3 uid="uid://bnovda8oahwrx"]
 
 [ext_resource type="Script" uid="uid://udywys6wnrhs" path="res://ff5_chaos.gd" id="1_wlhp2"]
 [ext_resource type="Theme" uid="uid://6wi045ghfygi" path="res://styling/theme.tres" id="2_j6bdw"]
 [ext_resource type="Texture2D" uid="uid://nnso4ftvabi4" path="res://img/sandworm.png" id="3_2l387"]
+[ext_resource type="FontFile" uid="uid://i8e1pdyijn00" path="res://8bitoperator_jve.ttf" id="4_tyjs0"]
 
 [sub_resource type="Gradient" id="Gradient_7w75s"]
 colors = PackedColorArray(0.171881, 0.212183, 0.462769, 1, 0.0482033, 0.0481537, 0.268455, 1)
@@ -75,6 +76,12 @@ _data = {
 &"show": SubResource("Animation_1d1qo")
 }
 
+[sub_resource type="Gradient" id="Gradient_tyjs0"]
+colors = PackedColorArray(0, 0, 0, 0.627451, 0, 0, 0, 0.627451)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_1d1qo"]
+gradient = SubResource("Gradient_tyjs0")
+
 [node name="Node2D" type="Node2D"]
 script = ExtResource("1_wlhp2")
 
@@ -93,17 +100,65 @@ grow_horizontal = 2
 grow_vertical = 2
 texture = SubResource("GradientTexture2D_8ofji")
 
+[node name="GregBuxCount" type="Label" parent="UI"]
+visible = false
+offset_left = 993.0
+offset_top = 11.0
+offset_right = 1125.0
+offset_bottom = 43.0
+theme = ExtResource("2_j6bdw")
+theme_override_font_sizes/font_size = 32
+text = "69 GregBux"
+
+[node name="TabBar" type="TabBar" parent="UI"]
+offset_left = 648.0
+offset_top = 6.0
+offset_right = 952.0
+offset_bottom = 46.0
+focus_mode = 1
+theme = ExtResource("2_j6bdw")
+current_tab = 0
+scrolling_enabled = false
+scroll_to_selected = false
+tab_count = 2
+tab_0/title = "Shop"
+tab_1/title = "Log"
+
+[node name="Shop" type="Panel" parent="UI"]
+offset_left = 633.0
+offset_top = 53.0
+offset_right = 1131.0
+offset_bottom = 355.0
+theme = ExtResource("2_j6bdw")
+
+[node name="ShopScroll" type="ScrollContainer" parent="UI/Shop"]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 6.0
+offset_right = 491.0
+offset_bottom = 295.0
+theme = ExtResource("2_j6bdw")
+horizontal_scroll_mode = 0
+
+[node name="ShopItemList" type="VBoxContainer" parent="UI/Shop/ShopScroll"]
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 2
+theme = ExtResource("2_j6bdw")
+
 [node name="Log" type="TextEdit" parent="UI"]
+visible = false
 texture_filter = 1
 clip_contents = false
 anchors_preset = -1
 anchor_left = 0.547
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -0.144043
-offset_top = 10.0
+offset_left = -0.143982
+offset_top = 55.0
 offset_right = -26.0
-offset_bottom = -40.0
+offset_bottom = -294.0
 grow_horizontal = 2
 grow_vertical = 2
 focus_mode = 0
@@ -131,6 +186,18 @@ drag_and_drop_selection_enabled = false
 virtual_keyboard_enabled = false
 middle_mouse_paste_enabled = false
 
+[node name="ClearLog" type="Button" parent="UI/Log"]
+custom_minimum_size = Vector2(70, 0)
+layout_mode = 2
+offset_left = 381.0
+offset_top = 2.0
+offset_right = 481.0
+offset_bottom = 38.0
+size_flags_horizontal = 3
+focus_mode = 0
+theme = ExtResource("2_j6bdw")
+text = "Clear Log"
+
 [node name="VBoxContainer" type="VBoxContainer" parent="UI"]
 texture_filter = 1
 anchors_preset = -1
@@ -143,76 +210,19 @@ offset_right = 0.0720215
 offset_bottom = -448.0
 theme_override_constants/separation = 6
 
-[node name="ServerIP" type="HBoxContainer" parent="UI/VBoxContainer"]
-texture_filter = 1
-layout_mode = 2
-
-[node name="ServerIPLabel" type="Label" parent="UI/VBoxContainer/ServerIP"]
-texture_filter = 1
-custom_minimum_size = Vector2(160, 0)
-layout_mode = 2
-theme = ExtResource("2_j6bdw")
-text = "Server IP Address: "
-
-[node name="ServerIPInput" type="LineEdit" parent="UI/VBoxContainer/ServerIP"]
-texture_filter = 1
-layout_mode = 2
-size_flags_horizontal = 3
-focus_mode = 1
-theme = ExtResource("2_j6bdw")
-text = "127.0.0.1"
-
-[node name="ServerPort" type="HBoxContainer" parent="UI/VBoxContainer"]
-texture_filter = 1
-layout_mode = 2
-
-[node name="ServerPortLabel" type="Label" parent="UI/VBoxContainer/ServerPort"]
-texture_filter = 1
-custom_minimum_size = Vector2(160, 0)
-layout_mode = 2
-theme = ExtResource("2_j6bdw")
-text = "Server Port: "
-
-[node name="ServerPortInput" type="LineEdit" parent="UI/VBoxContainer/ServerPort"]
-texture_filter = 1
-layout_mode = 2
-size_flags_horizontal = 3
-focus_mode = 1
-theme = ExtResource("2_j6bdw")
-text = "32024"
-max_length = 6
-
-[node name="Password" type="HBoxContainer" parent="UI/VBoxContainer"]
-texture_filter = 1
-layout_mode = 2
-
-[node name="PasswordLabel" type="Label" parent="UI/VBoxContainer/Password"]
-texture_filter = 1
-custom_minimum_size = Vector2(160, 0)
-layout_mode = 2
-theme = ExtResource("2_j6bdw")
-text = "Server Password:"
-
-[node name="PasswordInput" type="LineEdit" parent="UI/VBoxContainer/Password"]
-texture_filter = 1
-layout_mode = 2
-size_flags_horizontal = 3
-focus_mode = 1
-theme = ExtResource("2_j6bdw")
-
 [node name="PlayerName" type="HBoxContainer" parent="UI/VBoxContainer"]
 texture_filter = 1
 layout_mode = 2
 
 [node name="PlayerNameLabel" type="Label" parent="UI/VBoxContainer/PlayerName"]
 texture_filter = 1
-custom_minimum_size = Vector2(160, 0)
 layout_mode = 2
 theme = ExtResource("2_j6bdw")
 text = "Player Name: "
 
 [node name="PlayerNameInput" type="LineEdit" parent="UI/VBoxContainer/PlayerName"]
 texture_filter = 1
+custom_minimum_size = Vector2(350, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 focus_mode = 1
@@ -220,53 +230,24 @@ theme = ExtResource("2_j6bdw")
 text = "Player"
 max_length = 6
 
-[node name="PreferredCharacter" type="HBoxContainer" parent="UI/VBoxContainer"]
-texture_filter = 1
-layout_mode = 2
-
-[node name="PreferredCharacterLabelLabel" type="Label" parent="UI/VBoxContainer/PreferredCharacter"]
-texture_filter = 1
-custom_minimum_size = Vector2(160, 0)
-layout_mode = 2
-theme = ExtResource("2_j6bdw")
-text = "Preferred Character
-"
-
-[node name="PreferredCharacterInput" type="OptionButton" parent="UI/VBoxContainer/PreferredCharacter"]
-texture_filter = 1
+[node name="Change Name" type="Button" parent="UI/VBoxContainer/PlayerName"]
+custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_vertical = 0
-focus_mode = 1
+focus_mode = 0
 theme = ExtResource("2_j6bdw")
-selected = 0
-item_count = 4
-popup/item_0/text = "Bartz"
-popup/item_0/id = 1
-popup/item_1/text = "Lenna"
-popup/item_1/id = 2
-popup/item_2/text = "Galuf/Krile"
-popup/item_2/id = 3
-popup/item_3/text = "Faris"
-popup/item_3/id = 4
+text = "Update Name"
 
 [node name="Buttons" type="HBoxContainer" parent="UI"]
 texture_filter = 1
 anchors_preset = -1
 anchor_right = 0.54
 anchor_bottom = 1.0
-offset_left = 13.0
-offset_top = 196.0
-offset_right = 56.92
-offset_bottom = -398.0
-
-[node name="ConnectButton" type="Button" parent="UI/Buttons"]
-custom_minimum_size = Vector2(150, 0)
-layout_mode = 2
-size_flags_horizontal = 3
-focus_mode = 0
-theme = ExtResource("2_j6bdw")
-text = "Connect"
+offset_left = 196.0
+offset_top = 57.0
+offset_right = -211.08
+offset_bottom = -552.0
+alignment = 1
 
 [node name="DisconnectButton" type="Button" parent="UI/Buttons"]
 custom_minimum_size = Vector2(150, 0)
@@ -276,36 +257,15 @@ focus_mode = 0
 theme = ExtResource("2_j6bdw")
 text = "Disconnect"
 
-[node name="Change Name" type="Button" parent="UI/Buttons"]
-custom_minimum_size = Vector2(150, 0)
-layout_mode = 2
-size_flags_horizontal = 3
-focus_mode = 0
-theme = ExtResource("2_j6bdw")
-text = "Update Player
-Name"
-
-[node name="ClearLog" type="Button" parent="UI/Buttons"]
-custom_minimum_size = Vector2(150, 0)
-layout_mode = 2
-size_flags_horizontal = 3
-focus_mode = 0
-theme = ExtResource("2_j6bdw")
-text = "Clear Log"
-
-[node name="ButtonSpacer" type="Control" parent="UI/Buttons"]
-custom_minimum_size = Vector2(50, 0)
-layout_mode = 2
-
 [node name="CharacterIndexLabel" type="Label" parent="UI"]
 texture_filter = 1
 anchors_preset = -1
 anchor_right = 0.544
 anchor_bottom = 1.0
-offset_left = 233.0
-offset_top = 266.0
-offset_right = -179.688
-offset_bottom = -354.0
+offset_left = 195.0
+offset_top = 533.0
+offset_right = -217.688
+offset_bottom = -87.0
 label_settings = SubResource("LabelSettings_vgyif")
 
 [node name="PlayerSprite" type="TextureRect" parent="UI/CharacterIndexLabel"]
@@ -323,39 +283,48 @@ custom_minimum_size = Vector2(300, 0)
 anchors_preset = -1
 anchor_right = 0.544
 anchor_bottom = 1.0
-offset_left = 199.0
-offset_top = 317.0
-offset_right = -127.688
-offset_bottom = -295.0
+offset_left = 161.0
+offset_top = 584.0
+offset_right = -165.688
+offset_bottom = -28.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 label_settings = SubResource("LabelSettings_mvqjw")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="DisableInputCheckbox" type="CheckBox" parent="UI"]
+[node name="DisableInput" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 595.0
+offset_top = 599.0
+offset_right = 635.0
+offset_bottom = 639.0
+
+[node name="DisableInputCheckbox" type="CheckBox" parent="UI/DisableInput"]
 texture_filter = 1
+layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_left = 17.0
-offset_top = -66.0
-offset_right = 41.0
-offset_bottom = -42.0
+offset_top = -40.0
+offset_right = 24.0
+offset_bottom = -16.0
 grow_vertical = 0
-scale = Vector2(1.5, 1.5)
+scale = Vector2(1.35, 1.35)
 focus_mode = 0
 theme = ExtResource("2_j6bdw")
 
-[node name="DisableInputLabel" type="Label" parent="UI"]
+[node name="DisableInputLabel" type="Label" parent="UI/DisableInput"]
 texture_filter = 1
+layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_left = 65.0
-offset_top = -60.935
-offset_right = 196.0
-offset_bottom = -35.935
+offset_left = 48.0
+offset_top = -34.935
+offset_right = 179.0
+offset_bottom = -9.935
 grow_vertical = 0
 theme = ExtResource("2_j6bdw")
 theme_override_font_sizes/font_size = 24
@@ -366,10 +335,10 @@ texture_filter = 1
 layout_mode = 3
 anchor_right = 0.544
 anchor_bottom = 1.0
-offset_left = 17.0
-offset_top = 382.0
-offset_right = -27.688
-offset_bottom = -49.0
+offset_left = 594.0
+offset_top = 387.0
+offset_right = 549.312
+offset_bottom = -44.0
 
 [node name="InputUp" type="Button" parent="UI/ControlDisplay"]
 texture_filter = 1
@@ -543,9 +512,332 @@ offset_top = -48.0
 offset_right = -5.0
 offset_bottom = -4.0
 
+[node name="VideoPanel" type="Panel" parent="UI"]
+offset_left = 98.0
+offset_top = 104.0
+offset_right = 417.0
+offset_bottom = 409.0
+scale = Vector2(1.3, 1.3)
+theme = ExtResource("2_j6bdw")
+
+[node name="VideoTexture" type="TextureRect" parent="UI/VideoPanel"]
+layout_mode = 0
+offset_left = 6.15384
+offset_top = 6.15385
+offset_right = 262.154
+offset_bottom = 250.154
+scale = Vector2(1.2, 1.2)
+
+[node name="ConnectForm" type="CanvasLayer" parent="."]
+
+[node name="TextureRect" type="TextureRect" parent="ConnectForm"]
+texture_filter = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -33.0
+offset_top = -27.0
+offset_right = 28.0
+offset_bottom = 31.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("GradientTexture2D_8ofji")
+
+[node name="DisconnectButton" type="Button" parent="ConnectForm"]
+custom_minimum_size = Vector2(150, 0)
+offset_left = 498.0
+offset_top = 438.0
+offset_right = 700.0
+offset_bottom = 480.0
+size_flags_horizontal = 3
+focus_mode = 0
+theme = ExtResource("2_j6bdw")
+text = "Disconnect"
+
+[node name="ConnectButton" type="Button" parent="ConnectForm"]
+custom_minimum_size = Vector2(150, 0)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -78.0
+offset_top = 114.0
+offset_right = 124.0
+offset_bottom = 156.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+focus_mode = 0
+theme = ExtResource("2_j6bdw")
+text = "Connect"
+
+[node name="ConnectFields" type="VBoxContainer" parent="ConnectForm"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -243.0
+offset_top = -67.0
+offset_right = 121.0
+offset_bottom = 108.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="ServerIP" type="HBoxContainer" parent="ConnectForm/ConnectFields"]
+texture_filter = 1
+layout_mode = 2
+
+[node name="ServerIPLabel" type="Label" parent="ConnectForm/ConnectFields/ServerIP"]
+texture_filter = 1
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme = ExtResource("2_j6bdw")
+text = "Server IP Address: "
+
+[node name="ServerIPInput" type="LineEdit" parent="ConnectForm/ConnectFields/ServerIP"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 1
+theme = ExtResource("2_j6bdw")
+text = "127.0.0.1"
+
+[node name="ServerPort" type="HBoxContainer" parent="ConnectForm/ConnectFields"]
+texture_filter = 1
+layout_mode = 2
+
+[node name="ServerPortLabel" type="Label" parent="ConnectForm/ConnectFields/ServerPort"]
+texture_filter = 1
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme = ExtResource("2_j6bdw")
+text = "Server Port: "
+
+[node name="ServerPortInput" type="LineEdit" parent="ConnectForm/ConnectFields/ServerPort"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 1
+theme = ExtResource("2_j6bdw")
+text = "32024"
+max_length = 6
+
+[node name="Password" type="HBoxContainer" parent="ConnectForm/ConnectFields"]
+texture_filter = 1
+layout_mode = 2
+
+[node name="PasswordLabel" type="Label" parent="ConnectForm/ConnectFields/Password"]
+texture_filter = 1
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme = ExtResource("2_j6bdw")
+text = "Server Password:"
+
+[node name="PasswordInput" type="LineEdit" parent="ConnectForm/ConnectFields/Password"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 1
+theme = ExtResource("2_j6bdw")
+
+[node name="PlayerName" type="HBoxContainer" parent="ConnectForm/ConnectFields"]
+texture_filter = 1
+layout_mode = 2
+
+[node name="PlayerNameLabel" type="Label" parent="ConnectForm/ConnectFields/PlayerName"]
+texture_filter = 1
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme = ExtResource("2_j6bdw")
+text = "Player Name: "
+
+[node name="PlayerNameInput" type="LineEdit" parent="ConnectForm/ConnectFields/PlayerName"]
+texture_filter = 1
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+focus_mode = 1
+theme = ExtResource("2_j6bdw")
+text = "Player"
+max_length = 6
+
+[node name="PreferredCharacter" type="HBoxContainer" parent="ConnectForm/ConnectFields"]
+texture_filter = 1
+layout_mode = 2
+
+[node name="PreferredCharacterLabelLabel" type="Label" parent="ConnectForm/ConnectFields/PreferredCharacter"]
+texture_filter = 1
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+theme = ExtResource("2_j6bdw")
+text = "Preferred Character
+"
+
+[node name="PreferredCharacterInput" type="OptionButton" parent="ConnectForm/ConnectFields/PreferredCharacter"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 0
+focus_mode = 1
+theme = ExtResource("2_j6bdw")
+selected = 0
+item_count = 4
+popup/item_0/text = "Bartz"
+popup/item_0/id = 1
+popup/item_1/text = "Lenna"
+popup/item_1/id = 2
+popup/item_2/text = "Galuf/Krile"
+popup/item_2/id = 3
+popup/item_3/text = "Faris"
+popup/item_3/id = 4
+
+[node name="ClientTitle" type="Label" parent="ConnectForm"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -267.0
+offset_top = 109.0
+offset_right = 267.0
+offset_bottom = 157.0
+grow_horizontal = 2
+theme = ExtResource("2_j6bdw")
+theme_override_font_sizes/font_size = 48
+text = "Final Fantasy V Multi-Chaos"
+
+[node name="Log" type="TextEdit" parent="ConnectForm"]
+texture_filter = 1
+clip_contents = false
+anchors_preset = -1
+anchor_left = 0.547
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 216.856
+offset_top = 337.0
+offset_right = -7.0
+offset_bottom = -12.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+theme = ExtResource("2_j6bdw")
+text = "Gamepad controls should map mostly 1:1
+--------------------------
+Button indicators can be clicked to send input
+--------------------------
+Keyboard Controls
+arrow keys -> SNES D-Pad
+X -> SNES A
+Z -> SNES B
+S -> SNES X
+A -> SNES Y
+Q -> SNES L
+W -> SNES R
+V -> SNES Start
+C -> SNES Select
+--------------------------
+"
+editable = false
+emoji_menu_enabled = false
+selecting_enabled = false
+drag_and_drop_selection_enabled = false
+virtual_keyboard_enabled = false
+middle_mouse_paste_enabled = false
+wrap_mode = 1
+
+[node name="ClearLog" type="Button" parent="ConnectForm/Log"]
+custom_minimum_size = Vector2(70, 0)
+layout_mode = 2
+offset_left = 203.0
+offset_top = -39.0
+offset_right = 303.0
+offset_bottom = -3.0
+size_flags_horizontal = 3
+focus_mode = 0
+theme = ExtResource("2_j6bdw")
+text = "Clear Log"
+
+[node name="HelpAndInfo" type="CanvasLayer" parent="."]
+
+[node name="HelpPanel" type="TextureRect" parent="HelpAndInfo"]
+visible = false
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.997
+offset_right = -1.0
+offset_bottom = -0.0560303
+theme = ExtResource("2_j6bdw")
+texture = SubResource("GradientTexture1D_1d1qo")
+
+[node name="HelpText" type="RichTextLabel" parent="HelpAndInfo/HelpPanel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -264.5
+offset_top = -292.0
+offset_right = 265.5
+offset_bottom = 263.0
+grow_horizontal = 2
+grow_vertical = 2
+bbcode_enabled = true
+text = "[center][font_size=36]FFV Multi-Chaos Client[/font_size][/center]
+
+This program is used to connect to a host running the corresponding server program to allow multiplayer Final Fantasy V over the internet with up to 4 players.
+
+To connect, you'll need to get an IP address, port and (optionally) a password from the host. Next, enter the name you would like for your character in-game (maximum 6 characters, English letters and numbers only), choose your preferred character (you might be assigned a different character if your preference is claimed already) and click the Connect button.
+
+You can control the game whenever the party is out of battle, or whenever your character's turn is up in battle.
+
+At the start of each battle Gilgamesh gives everyone 2 GregBux. These can be used to buy various bonuses in the Shop tab. The host can adjust which bonuses are available and their cost.
+
+If the host enables video streaming a small view of the game is shown. The framerate is low, but there should be less latency than most other methods.
+
+[url=https://qwarq.io]Created by Qwarq[/url]
+
+Full source code for the client and server are available at:
+ [url=https://github.com/StrangeQwarq/ff5-multi-chaos]https://github.com/StrangeQwarq/ff5-multi-chaos[/url]
+"
+
+[node name="CloseHelpButton" type="Button" parent="HelpAndInfo/HelpPanel"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -38.5
+offset_top = -52.0
+offset_right = 39.5
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Close"
+
+[node name="LinkButton" type="LinkButton" parent="HelpAndInfo"]
+offset_left = 10.0
+offset_top = 615.0
+offset_right = 52.0
+offset_bottom = 655.0
+theme = ExtResource("2_j6bdw")
+theme_override_fonts/font = ExtResource("4_tyjs0")
+theme_override_font_sizes/font_size = 24
+text = "HELP"
+
+[connection signal="tab_changed" from="UI/TabBar" to="." method="_on_tab_bar_tab_changed"]
+[connection signal="pressed" from="UI/Log/ClearLog" to="." method="_on_clear_log_pressed"]
 [connection signal="text_submitted" from="UI/VBoxContainer/PlayerName/PlayerNameInput" to="." method="_on_player_name_input_text_submitted"]
-[connection signal="pressed" from="UI/Buttons/ConnectButton" to="." method="_on_connect_button_pressed"]
+[connection signal="pressed" from="UI/VBoxContainer/PlayerName/Change Name" to="." method="_on_change_name_pressed"]
 [connection signal="pressed" from="UI/Buttons/DisconnectButton" to="." method="_on_disconnect_button_pressed"]
-[connection signal="pressed" from="UI/Buttons/Change Name" to="." method="_on_change_name_pressed"]
-[connection signal="pressed" from="UI/Buttons/ClearLog" to="." method="_on_clear_log_pressed"]
 [connection signal="pressed" from="UI/SandwormButton" to="." method="_on_sandworm_button_pressed"]
+[connection signal="pressed" from="ConnectForm/DisconnectButton" to="." method="_on_disconnect_button_pressed"]
+[connection signal="pressed" from="ConnectForm/ConnectButton" to="." method="_on_connect_button_pressed"]
+[connection signal="text_submitted" from="ConnectForm/ConnectFields/PlayerName/PlayerNameInput" to="." method="_on_player_name_input_text_submitted"]
+[connection signal="pressed" from="ConnectForm/Log/ClearLog" to="." method="_on_clear_log_pressed"]
+[connection signal="meta_clicked" from="HelpAndInfo/HelpPanel/HelpText" to="." method="_on_help_text_meta_clicked"]
+[connection signal="pressed" from="HelpAndInfo/HelpPanel/CloseHelpButton" to="." method="_on_close_help_button_pressed"]
+[connection signal="pressed" from="HelpAndInfo/LinkButton" to="." method="_on_link_button_pressed"]

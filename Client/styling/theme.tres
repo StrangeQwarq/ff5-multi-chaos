@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=12 format=3 uid="uid://6wi045ghfygi"]
+[gd_resource type="Theme" load_steps=14 format=3 uid="uid://6wi045ghfygi"]
 
 [ext_resource type="FontFile" uid="uid://i8e1pdyijn00" path="res://8bitoperator_jve.ttf" id="1_8kexh"]
 [ext_resource type="StyleBox" uid="uid://rbif3o17pmpm" path="res://styling/button_hover.tres" id="2_26yl3"]
@@ -6,6 +6,8 @@
 [ext_resource type="StyleBox" uid="uid://bfrtlka3vm7g0" path="res://styling/checkbox_normal.tres" id="3_26yl3"]
 [ext_resource type="StyleBox" uid="uid://1ahjvbfbucek" path="res://styling/checkbox_checked.tres" id="4_pw3ru"]
 [ext_resource type="StyleBox" uid="uid://doxuwn5k4qcwr" path="res://styling/line_edit_style.tres" id="5_r4g5a"]
+[ext_resource type="StyleBox" uid="uid://cud71c5yjo3ym" path="res://styling/tab_selected.tres" id="7_pw3ru"]
+[ext_resource type="StyleBox" uid="uid://du8yghffip1xs" path="res://styling/tab_unselected.tres" id="8_r4g5a"]
 
 [sub_resource type="Gradient" id="Gradient_cjfk0"]
 colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1)
@@ -55,6 +57,15 @@ OptionButton/styles/hover = ExtResource("5_r4g5a")
 OptionButton/styles/hover_pressed = ExtResource("5_r4g5a")
 OptionButton/styles/normal = ExtResource("5_r4g5a")
 OptionButton/styles/pressed = ExtResource("5_r4g5a")
+Panel/styles/panel = ExtResource("2_bba46")
+RichTextLabel/styles/focus = ExtResource("5_r4g5a")
+RichTextLabel/styles/normal = ExtResource("5_r4g5a")
+TabBar/constants/h_separation = 4
+TabBar/font_sizes/font_size = 26
+TabBar/fonts/font = ExtResource("1_8kexh")
+TabBar/styles/tab_hovered = ExtResource("8_r4g5a")
+TabBar/styles/tab_selected = ExtResource("7_pw3ru")
+TabBar/styles/tab_unselected = ExtResource("8_r4g5a")
 TextEdit/colors/font_readonly_color = Color(0.87451, 0.87451, 0.87451, 1)
 TextEdit/font_sizes/font_size = 20
 TextEdit/fonts/font = ExtResource("1_8kexh")
