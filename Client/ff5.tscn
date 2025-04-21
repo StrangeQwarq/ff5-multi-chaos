@@ -1,9 +1,11 @@
-[gd_scene load_steps=15 format=3 uid="uid://bnovda8oahwrx"]
+[gd_scene load_steps=17 format=3 uid="uid://bnovda8oahwrx"]
 
 [ext_resource type="Script" uid="uid://udywys6wnrhs" path="res://ff5_chaos.gd" id="1_wlhp2"]
 [ext_resource type="Theme" uid="uid://6wi045ghfygi" path="res://styling/theme.tres" id="2_j6bdw"]
+[ext_resource type="Texture2D" uid="uid://dgjj3t3x4sakx" path="res://img/greg1.png" id="3_1d1qo"]
 [ext_resource type="Texture2D" uid="uid://nnso4ftvabi4" path="res://img/sandworm.png" id="3_2l387"]
 [ext_resource type="FontFile" uid="uid://i8e1pdyijn00" path="res://8bitoperator_jve.ttf" id="4_tyjs0"]
+[ext_resource type="Texture2D" uid="uid://njph3x73mm27" path="res://img/greg2.png" id="5_w7pfe"]
 
 [sub_resource type="Gradient" id="Gradient_7w75s"]
 colors = PackedColorArray(0.171881, 0.212183, 0.462769, 1, 0.0482033, 0.0481537, 0.268455, 1)
@@ -101,21 +103,28 @@ grow_vertical = 2
 texture = SubResource("GradientTexture2D_8ofji")
 
 [node name="GregBuxCount" type="Label" parent="UI"]
-visible = false
-offset_left = 993.0
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -159.0
 offset_top = 11.0
-offset_right = 1125.0
+offset_right = -27.0
 offset_bottom = 43.0
+grow_horizontal = 0
 theme = ExtResource("2_j6bdw")
 theme_override_font_sizes/font_size = 32
 text = "69 GregBux"
 
 [node name="TabBar" type="TabBar" parent="UI"]
-offset_left = 648.0
+anchors_preset = -1
+anchor_left = 0.562
+anchor_right = 0.826
+anchor_bottom = 0.071
+offset_left = 0.575928
 offset_top = 6.0
-offset_right = 952.0
-offset_bottom = 46.0
-focus_mode = 1
+offset_right = 0.447937
+offset_bottom = -0.00800323
+focus_mode = 0
 theme = ExtResource("2_j6bdw")
 current_tab = 0
 scrolling_enabled = false
@@ -124,19 +133,43 @@ tab_count = 2
 tab_0/title = "Shop"
 tab_1/title = "Log"
 
+[node name="TextureRect2" type="TextureRect" parent="UI"]
+anchors_preset = -1
+anchor_left = 1.0
+anchor_top = 0.085
+anchor_right = 1.0
+anchor_bottom = 0.085
+offset_left = -317.0
+offset_top = -59.08
+offset_right = -212.0
+offset_bottom = 73.92
+grow_horizontal = 0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture = ExtResource("3_1d1qo")
+flip_h = true
+
 [node name="Shop" type="Panel" parent="UI"]
-offset_left = 633.0
-offset_top = 53.0
-offset_right = 1131.0
-offset_bottom = 355.0
+anchors_preset = -1
+anchor_left = 0.549
+anchor_top = 0.082
+anchor_right = 0.982
+anchor_bottom = 0.548
+offset_left = 0.552002
+offset_top = -0.136002
+offset_right = -0.264038
+offset_bottom = -0.104034
 theme = ExtResource("2_j6bdw")
 
 [node name="ShopScroll" type="ScrollContainer" parent="UI/Shop"]
-layout_mode = 0
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.0
 offset_left = 6.0
 offset_top = 6.0
-offset_right = 491.0
-offset_bottom = 295.0
+offset_right = -7.0
+offset_bottom = -7.0
 theme = ExtResource("2_j6bdw")
 horizontal_scroll_mode = 0
 
@@ -150,15 +183,15 @@ theme = ExtResource("2_j6bdw")
 [node name="Log" type="TextEdit" parent="UI"]
 visible = false
 texture_filter = 1
-clip_contents = false
 anchors_preset = -1
 anchor_left = 0.547
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -0.143982
-offset_top = 55.0
-offset_right = -26.0
-offset_bottom = -294.0
+anchor_top = 0.085
+anchor_right = 0.977
+anchor_bottom = 0.546
+offset_left = 2.85596
+offset_top = -4.08
+offset_right = 5.49597
+offset_bottom = 3.19199
 grow_horizontal = 2
 grow_vertical = 2
 focus_mode = 0
@@ -189,9 +222,11 @@ middle_mouse_paste_enabled = false
 [node name="ClearLog" type="Button" parent="UI/Log"]
 custom_minimum_size = Vector2(70, 0)
 layout_mode = 2
-offset_left = 381.0
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -117.0
 offset_top = 2.0
-offset_right = 481.0
+offset_right = -17.0
 offset_bottom = 38.0
 size_flags_horizontal = 3
 focus_mode = 0
@@ -203,11 +238,11 @@ texture_filter = 1
 anchors_preset = -1
 anchor_top = 0.026
 anchor_right = 0.539
-anchor_bottom = 1.0
+anchor_bottom = 0.077
 offset_left = 16.0
 offset_top = 0.152
 offset_right = 0.0720215
-offset_bottom = -448.0
+offset_bottom = 0.103996
 theme_override_constants/separation = 6
 
 [node name="PlayerName" type="HBoxContainer" parent="UI/VBoxContainer"]
@@ -241,12 +276,14 @@ text = "Update Name"
 [node name="Buttons" type="HBoxContainer" parent="UI"]
 texture_filter = 1
 anchors_preset = -1
-anchor_right = 0.54
-anchor_bottom = 1.0
-offset_left = 196.0
-offset_top = 57.0
-offset_right = -211.08
-offset_bottom = -552.0
+anchor_left = 0.17
+anchor_top = 0.088
+anchor_right = 0.357
+anchor_bottom = 0.148
+offset_left = 0.160004
+offset_top = -0.0240059
+offset_right = -0.264038
+offset_bottom = 0.0960007
 alignment = 1
 
 [node name="DisconnectButton" type="Button" parent="UI/Buttons"]
@@ -260,20 +297,25 @@ text = "Disconnect"
 [node name="CharacterIndexLabel" type="Label" parent="UI"]
 texture_filter = 1
 anchors_preset = -1
-anchor_right = 0.544
-anchor_bottom = 1.0
+anchor_top = 0.866
+anchor_right = 0.5
+anchor_bottom = 0.866
 offset_left = 195.0
-offset_top = 533.0
-offset_right = -217.688
-offset_bottom = -87.0
+offset_top = -28.168
+offset_right = -167.0
+offset_bottom = -0.16803
 label_settings = SubResource("LabelSettings_vgyif")
+horizontal_alignment = 1
 
 [node name="PlayerSprite" type="TextureRect" parent="UI/CharacterIndexLabel"]
 texture_filter = 1
-layout_mode = 0
-offset_left = -150.0
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -257.0
 offset_top = -1.0
-offset_right = -134.0
+offset_right = -241.0
 offset_bottom = 23.0
 scale = Vector2(4, 4)
 
@@ -281,12 +323,13 @@ scale = Vector2(4, 4)
 texture_filter = 1
 custom_minimum_size = Vector2(300, 0)
 anchors_preset = -1
-anchor_right = 0.544
-anchor_bottom = 1.0
+anchor_top = 0.901
+anchor_right = 0.5
+anchor_bottom = 0.957
 offset_left = 161.0
-offset_top = 584.0
-offset_right = -165.688
-offset_bottom = -28.0
+offset_top = 0.151978
+offset_right = -115.0
+offset_bottom = -0.135986
 size_flags_horizontal = 3
 size_flags_vertical = 3
 label_settings = SubResource("LabelSettings_mvqjw")
@@ -295,11 +338,14 @@ vertical_alignment = 1
 
 [node name="DisableInput" type="Control" parent="UI"]
 layout_mode = 3
-anchors_preset = 0
-offset_left = 595.0
-offset_top = 599.0
-offset_right = 635.0
-offset_bottom = 639.0
+anchor_left = 0.516
+anchor_top = 0.924
+anchor_right = 0.684
+anchor_bottom = 1.0
+offset_left = 0.567993
+offset_top = 0.247986
+offset_right = -152.968
+offset_bottom = -9.0
 
 [node name="DisableInputCheckbox" type="CheckBox" parent="UI/DisableInput"]
 texture_filter = 1
@@ -333,42 +379,59 @@ text = "DISABLE INPUT"
 [node name="ControlDisplay" type="Control" parent="UI"]
 texture_filter = 1
 layout_mode = 3
-anchor_right = 0.544
+anchor_left = 0.5
+anchor_top = 0.561
+anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 594.0
-offset_top = 387.0
-offset_right = 549.312
-offset_bottom = -44.0
+offset_left = 62.0
+offset_top = 27.472
+offset_right = -25.0
+offset_bottom = -40.0
 
 [node name="InputUp" type="Button" parent="UI/ControlDisplay"]
 texture_filter = 1
-layout_mode = 0
-offset_left = 114.0
-offset_top = 53.0
-offset_right = 164.0
-offset_bottom = 102.0
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.147
+anchor_top = 0.286
+anchor_right = 0.249
+anchor_bottom = 0.5
+offset_left = 0.116997
+offset_top = -0.0620041
+offset_right = 0.238991
+offset_bottom = 2.5
 focus_mode = 0
 theme = ExtResource("2_j6bdw")
 text = "Up"
 
 [node name="InputDown" type="Button" parent="UI/ControlDisplay"]
 texture_filter = 1
-layout_mode = 0
-offset_left = 114.0
-offset_top = 117.0
-offset_right = 164.0
-offset_bottom = 166.0
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.147
+anchor_top = 0.581
+anchor_right = 0.249
+anchor_bottom = 0.806
+offset_left = 0.116997
+offset_top = -0.0770035
+offset_right = 0.238991
+offset_bottom = 0.0979919
 focus_mode = 0
 theme = ExtResource("2_j6bdw")
 text = "Down"
 
 [node name="InputRight" type="Button" parent="UI/ControlDisplay"]
 texture_filter = 1
-layout_mode = 0
-offset_left = 172.0
-offset_top = 84.0
-offset_right = 222.0
-offset_bottom = 134.0
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.266
+anchor_top = 0.429
+anchor_right = 0.368
+anchor_bottom = 0.659
+offset_left = -0.0740051
+offset_top = -0.0930023
+offset_right = 0.0479889
+offset_bottom = -0.00300598
 focus_mode = 0
 theme = ExtResource("2_j6bdw")
 theme_override_font_sizes/font_size = 18
@@ -376,66 +439,96 @@ text = "Right"
 
 [node name="InputLeft" type="Button" parent="UI/ControlDisplay"]
 texture_filter = 1
-layout_mode = 0
-offset_left = 54.0
-offset_top = 86.0
-offset_right = 104.0
-offset_bottom = 136.0
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.025
+anchor_top = 0.438
+anchor_right = 0.127
+anchor_bottom = 0.668
+offset_left = -0.225
+offset_top = -0.0460052
+offset_right = -0.103001
+offset_bottom = 0.0439911
 focus_mode = 0
 theme = ExtResource("2_j6bdw")
 text = "Left"
 
 [node name="InputX" type="Button" parent="UI/ControlDisplay"]
 texture_filter = 1
-layout_mode = 0
-offset_left = 409.0
-offset_top = 52.0
-offset_right = 459.0
-offset_bottom = 101.0
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.751
+anchor_top = 0.281
+anchor_right = 0.853
+anchor_bottom = 0.5
+offset_left = -0.239014
+offset_top = 0.022995
+offset_right = -0.117035
+offset_bottom = 1.5
 focus_mode = 0
 theme = ExtResource("2_j6bdw")
 text = "X"
 
 [node name="InputB" type="Button" parent="UI/ControlDisplay"]
 texture_filter = 1
-layout_mode = 0
-offset_left = 409.0
-offset_top = 116.0
-offset_right = 459.0
-offset_bottom = 165.0
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.751
+anchor_top = 0.576
+anchor_right = 0.853
+anchor_bottom = 0.802
+offset_left = -0.239014
+offset_top = 0.00799561
+offset_right = -0.117035
+offset_bottom = -0.0340118
 focus_mode = 0
 theme = ExtResource("2_j6bdw")
 text = "B"
 
 [node name="InputA" type="Button" parent="UI/ControlDisplay"]
 texture_filter = 1
-layout_mode = 0
-offset_left = 468.0
-offset_top = 84.0
-offset_right = 518.0
-offset_bottom = 134.0
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.871
+anchor_top = 0.429
+anchor_right = 0.973
+anchor_bottom = 0.659
+offset_left = 0.0809631
+offset_top = -0.0930023
+offset_right = 0.202972
+offset_bottom = -0.00300598
 focus_mode = 0
 theme = ExtResource("2_j6bdw")
 text = "A"
 
 [node name="InputY" type="Button" parent="UI/ControlDisplay"]
 texture_filter = 1
-layout_mode = 0
-offset_left = 350.0
-offset_top = 86.0
-offset_right = 400.0
-offset_bottom = 136.0
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.63
+anchor_top = 0.438
+anchor_right = 0.732
+anchor_bottom = 0.668
+offset_left = -0.0700378
+offset_top = -0.0460052
+offset_right = 0.0519714
+offset_bottom = 0.0439911
 focus_mode = 0
 theme = ExtResource("2_j6bdw")
 text = "Y"
 
 [node name="InputStart" type="Button" parent="UI/ControlDisplay"]
 texture_filter = 1
-layout_mode = 0
-offset_left = 320.0
-offset_top = 154.0
-offset_right = 370.0
-offset_bottom = 204.0
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.569
+anchor_top = 0.751
+anchor_right = 0.671
+anchor_bottom = 0.982
+offset_left = -0.240997
+offset_top = 0.0329895
+offset_right = -0.118988
+offset_bottom = -0.0940094
 focus_mode = 0
 theme = ExtResource("2_j6bdw")
 theme_override_font_sizes/font_size = 18
@@ -443,11 +536,16 @@ text = "Start"
 
 [node name="InputSelect" type="Button" parent="UI/ControlDisplay"]
 texture_filter = 1
-layout_mode = 0
-offset_left = 202.0
-offset_top = 156.0
-offset_right = 256.0
-offset_bottom = 205.0
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.327
+anchor_top = 0.76
+anchor_right = 0.438
+anchor_bottom = 0.986
+offset_left = 0.0969849
+offset_top = 0.0799866
+offset_right = -0.182007
+offset_bottom = 0.0379944
 focus_mode = 0
 theme = ExtResource("2_j6bdw")
 theme_override_font_sizes/font_size = 16
@@ -455,22 +553,32 @@ text = "Select"
 
 [node name="InputR" type="Button" parent="UI/ControlDisplay"]
 texture_filter = 1
-layout_mode = 0
-offset_left = 320.0
-offset_top = -2.0
-offset_right = 370.0
-offset_bottom = 48.0
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.569
+anchor_top = 0.032
+anchor_right = 0.671
+anchor_bottom = 0.263
+offset_left = -0.240997
+offset_top = 0.0559998
+offset_right = -0.118988
+offset_bottom = -0.071003
 focus_mode = 0
 theme = ExtResource("2_j6bdw")
 text = "R"
 
 [node name="InputL" type="Button" parent="UI/ControlDisplay"]
 texture_filter = 1
-layout_mode = 0
-offset_left = 202.0
-offset_top = -1.0
-offset_right = 252.0
-offset_bottom = 49.0
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.327
+anchor_top = 0.037
+anchor_right = 0.429
+anchor_bottom = 0.267
+offset_left = 0.0969849
+offset_top = -0.0290003
+offset_right = 0.218994
+offset_bottom = 0.060997
 focus_mode = 0
 theme = ExtResource("2_j6bdw")
 text = "L"
@@ -513,15 +621,21 @@ offset_right = -5.0
 offset_bottom = -4.0
 
 [node name="VideoPanel" type="Panel" parent="UI"]
-offset_left = 98.0
-offset_top = 104.0
-offset_right = 417.0
-offset_bottom = 409.0
+anchors_preset = -1
+anchor_left = 0.085
+anchor_top = 0.16
+anchor_right = 0.445
+anchor_bottom = 0.74
+offset_left = 0.0800018
+offset_top = 0.319992
+offset_right = -95.64
+offset_bottom = -70.52
 scale = Vector2(1.3, 1.3)
 theme = ExtResource("2_j6bdw")
 
 [node name="VideoTexture" type="TextureRect" parent="UI/VideoPanel"]
-layout_mode = 0
+layout_mode = 1
+anchors_preset = -1
 offset_left = 6.15384
 offset_top = 6.15385
 offset_right = 262.154
@@ -545,26 +659,32 @@ texture = SubResource("GradientTexture2D_8ofji")
 
 [node name="DisconnectButton" type="Button" parent="ConnectForm"]
 custom_minimum_size = Vector2(150, 0)
-offset_left = 498.0
-offset_top = 438.0
-offset_right = 700.0
-offset_bottom = 480.0
-size_flags_horizontal = 3
+anchors_preset = -1
+anchor_left = 0.288
+anchor_top = 0.398
+anchor_right = 0.288
+anchor_bottom = 0.398
+offset_left = 166.224
+offset_top = 180.096
+offset_right = 368.224
+offset_bottom = 222.096
+size_flags_horizontal = 6
+size_flags_vertical = 4
 focus_mode = 0
 theme = ExtResource("2_j6bdw")
 text = "Disconnect"
 
 [node name="ConnectButton" type="Button" parent="ConnectForm"]
 custom_minimum_size = Vector2(150, 0)
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -78.0
-offset_top = 114.0
-offset_right = 124.0
-offset_bottom = 156.0
+anchors_preset = -1
+anchor_left = 0.288
+anchor_top = 0.399
+anchor_right = 0.288
+anchor_bottom = 0.399
+offset_left = 166.224
+offset_top = 179.448
+offset_right = 368.224
+offset_bottom = 221.448
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
@@ -573,15 +693,15 @@ theme = ExtResource("2_j6bdw")
 text = "Connect"
 
 [node name="ConnectFields" type="VBoxContainer" parent="ConnectForm"]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -243.0
-offset_top = -67.0
-offset_right = 121.0
-offset_bottom = 108.0
+anchors_preset = -1
+anchor_left = 0.289
+anchor_top = 0.397
+anchor_right = 0.605
+anchor_bottom = 0.667
+offset_left = 0.071991
+offset_top = -0.256012
+offset_right = 0.039978
+offset_bottom = -0.216034
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
@@ -696,27 +816,43 @@ popup/item_3/text = "Faris"
 popup/item_3/id = 4
 
 [node name="ClientTitle" type="Label" parent="ConnectForm"]
-anchors_preset = 5
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -267.0
-offset_top = 109.0
-offset_right = 267.0
-offset_bottom = 157.0
+anchors_preset = -1
+anchor_left = 0.267
+anchor_right = 0.738
+anchor_bottom = 1.0
+offset_left = -300.584
+offset_top = 111.0
+offset_right = 297.824
+offset_bottom = -489.0
 grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
 theme = ExtResource("2_j6bdw")
 theme_override_font_sizes/font_size = 48
 text = "Final Fantasy V Multi-Chaos"
+horizontal_alignment = 1
+
+[node name="TextureRect2" type="TextureRect" parent="ConnectForm"]
+modulate = Color(1, 1, 1, 0.54902)
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -153.5
+offset_right = 278.0
+offset_bottom = 153.5
+grow_vertical = 2
+texture = ExtResource("5_w7pfe")
 
 [node name="Log" type="TextEdit" parent="ConnectForm"]
 texture_filter = 1
 clip_contents = false
 anchors_preset = -1
-anchor_left = 0.547
+anchor_left = 0.735
+anchor_top = 0.52
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 216.856
-offset_top = 337.0
+offset_left = 0.279968
+offset_top = 0.039978
 offset_right = -7.0
 offset_bottom = -12.0
 grow_horizontal = 2
@@ -750,10 +886,14 @@ wrap_mode = 1
 [node name="ClearLog" type="Button" parent="ConnectForm/Log"]
 custom_minimum_size = Vector2(70, 0)
 layout_mode = 2
-offset_left = 203.0
-offset_top = -39.0
-offset_right = 303.0
-offset_bottom = -3.0
+anchor_left = 0.681
+anchor_top = -0.13
+anchor_right = 1.017
+anchor_bottom = -0.01
+offset_left = 0.0619202
+offset_top = -0.129997
+offset_right = -0.0660095
+offset_bottom = -0.00999975
 size_flags_horizontal = 3
 focus_mode = 0
 theme = ExtResource("2_j6bdw")
@@ -773,15 +913,14 @@ texture = SubResource("GradientTexture1D_1d1qo")
 
 [node name="HelpText" type="RichTextLabel" parent="HelpAndInfo/HelpPanel"]
 layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -264.5
-offset_top = -292.0
-offset_right = 265.5
-offset_bottom = 263.0
+anchors_preset = -1
+anchor_left = 0.27
+anchor_right = 0.731
+anchor_bottom = 1.0
+offset_left = 0.22998
+offset_top = 31.0
+offset_right = -0.380981
+offset_bottom = -59.9999
 grow_horizontal = 2
 grow_vertical = 2
 bbcode_enabled = true
@@ -793,7 +932,7 @@ To connect, you'll need to get an IP address, port and (optionally) a password f
 
 You can control the game whenever the party is out of battle, or whenever your character's turn is up in battle.
 
-At the start of each battle Gilgamesh gives everyone 2 GregBux. These can be used to buy various bonuses in the Shop tab. The host can adjust which bonuses are available and their cost.
+At the start of each battle Gilgamesh gives everyone 1 GregBux. These can be used to buy various bonuses in the Shop tab. The host can adjust which bonuses are available and their cost.
 
 If the host enables video streaming a small view of the game is shown. The framerate is low, but there should be less latency than most other methods.
 
@@ -819,10 +958,14 @@ grow_vertical = 0
 text = "Close"
 
 [node name="LinkButton" type="LinkButton" parent="HelpAndInfo"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
 offset_left = 10.0
-offset_top = 615.0
+offset_top = -33.0
 offset_right = 52.0
-offset_bottom = 655.0
+offset_bottom = 7.0
+grow_vertical = 0
 theme = ExtResource("2_j6bdw")
 theme_override_fonts/font = ExtResource("4_tyjs0")
 theme_override_font_sizes/font_size = 24

@@ -1,6 +1,15 @@
 local socket = require("socket")
 local shop_item_customized = require("effects")
 
+-- abp doesn't work when used in battle
+-- hp+ doesn't work in battle
+-- when battle ends everyone doesn't get control
+-- video streaming is fucked
+
+-- new options
+-- run from battle
+-- set battle speed to max
+
 -- binds to a port and accepts connections
 local server = nil
 
@@ -62,9 +71,18 @@ local lower_offset = 0x7A
 -- starting value for numeric letters
 local number_offset = 0x53
 
+local escape_percent_addr = 0x7E3EF0
+
+--local battle_speed_addr = 0x7E2C9D
+-- i think this one only applies in battle? 00 15 30 60 120 240 (from battle speed)
+local battle_speed_addr = 0x7E3ED6
+
 -- byte value is 0x10 when in battle and 0x0 when out of battle
 -- i'm not sure what this value represents but it's more consistent than the battle status
 local battle_status_addr = 0x7E014D --0x7E7BDE
+
+-- 0x0 = battle not over, 0x1 = escaped, 0x20 = timed event end, 0x40 game over, 0x80 enemies died
+local battle_over_flag_addr = 0x7E7BDE
 
 -- address of the current encounter. up to 0x1FF is valid, only valid in battle.
 local battle_encounter_id_addr = 0x7E04F0
@@ -75,6 +93,7 @@ local names_base_addr = 0x7E0990
 -- indicates the position of the character that's active, 0x180 and smaller means a player
 local active_character_index_addr = 0x7E010D
 
+-- flags of the character's innate abilities. used to force set dash enabled
 local player_1_innate_abilities_addr = 0x7E0520
 
 local character_battle_data_size = 0x80
@@ -103,7 +122,10 @@ local control_bits = 0
 local current_enemy_formation = 0
 
 -- handle to the window
-local control_form = forms.newform(250, 300, "FF5 Multi-Chaos Control Panel")
+local control_form = forms.newform(250, 330, "FF5 Multi-Chaos Control Panel")
+
+local in_control_label = forms.label(control_form, "Who's in control:", 10, 255, 100, 15)
+local in_control_name_label = forms.label(control_form, "Everyone", 10, 270, 100, 15)
 
 -- handle to the textbox for setting the port
 local port_textbox = forms.textbox(control_form, "32024", 100, 30, "UNSIGNED", 10, 30, false)
@@ -173,15 +195,61 @@ end
 local shop_data_text = ""
 
 local shop_items = {
+	["speed"] = {
+		cost = 2,
+		name = "SPEED",
+		desc = "Maxes out the battle speed",
+		func = function(player)
+			local in_battle = is_in_battle()
+			local current_speed = memory.read_u8(battle_speed_addr)
+
+			if not in_battle or current_speed == 0xF0 then
+				return false
+			else
+				memory.write_u8(battle_speed_addr, 0xF0)
+			end
+		end
+	},
+	["run"] = {
+		cost = 3,
+		name = "RUN AWAY",
+		desc = "Immediately run away from the current battle",
+		func = function(player)
+			if not is_in_battle() then
+				print("run: not in battle")
+				return false
+			end
+
+			local battle_over_flag = memory.read_u8(battle_over_flag_addr)
+			local escape_chance_value = memory.read_u8(escape_percent_addr)
+			local unrunnable = bit.band(escape_chance_value, 0x80)
+
+			if battle_over_flag ~= 0x1 and unrunnable == 0 then
+				memory.write_u8(battle_over_flag_addr, 0x1)
+			else
+				return false
+			end
+		end
+	},
 	["exp"] = {
 		cost = 5,
 		name = "EXP+",
 		desc = "Gives some extra EXP based on your level (level ups won't happen until the end of the next battle)",
 		func = function(player)
 			local character_index = character_indexes[player["player_index"]]
-			local character_data_offset = (character_index * character_world_data_size)
-			local player_level = memory.read_u8(0x7E0502 + character_data_offset)
-			local current_exp_addr = 0x7E0503 + character_data_offset
+			local current_exp_addr = nil
+
+			local character_world_data_offset = (character_index * character_world_data_size)
+			local character_battle_data_offset = (character_index * character_battle_data_size)
+
+			-- use the out of battle level since we don't want in-battle level manipulation skewing the exp
+			local player_level = memory.read_u8(0x7E0502 + character_world_data_offset)
+			if is_in_battle() then
+				current_exp_addr = 0x7E2003 + character_battle_data_offset
+			else
+				current_exp_addr = 0x7E0503 + character_world_data_offset
+			end
+
 			local current_exp = memory.read_u24_le(current_exp_addr)
 			local bonus_exp = player_level * player_level * player_level
 
@@ -195,7 +263,14 @@ local shop_items = {
 		func = function(player)
 			local abp_bonus = 10
 			local character_index = character_indexes[player["player_index"]]
-			local abp_addr = 0x7E053B + (character_index * character_world_data_size)
+			local abp_addr = nil
+
+			if is_in_battle() then
+				abp_addr = 0x7E203B + (character_index * character_battle_data_size)
+			else
+				abp_addr = 0x7E053B + (character_index * character_world_data_size)
+			end
+
 			local current_abp = memory.read_u16_le(abp_addr)
 			memory.write_u16_le(abp_addr, current_abp + abp_bonus)
 		end
@@ -205,14 +280,27 @@ local shop_items = {
 		name = "HEAL",
 		desc = "Recovers 25% of max hp",
 		func = function(player)
+			local current_hp_addr = nil
+			local max_hp_addr = nil
 			local character_index = character_indexes[player["player_index"]]
-			local current_hp_addr = 0x7E0506 + (character_index * character_world_data_size)
-			local max_hp_addr = current_hp_addr + 3
+
+			if is_in_battle() then
+				current_hp_addr = 0x7E2006 + (character_index * character_battle_data_size)
+				max_hp_addr = current_hp_addr + 2
+			else
+				current_hp_addr = 0x7E0506 + (character_index * character_world_data_size)
+				max_hp_addr = current_hp_addr + 2
+			end
+
 			local current_hp = memory.read_u16_le(current_hp_addr)
 			local max_hp = memory.read_u16_le(max_hp_addr)
 
-			current_hp = math.min(current_hp + (current_hp * 0.25), max_hp)
-			memory.write_u16_le(abp_addr, current_hp)
+			if current_hp == max_hp then
+				return false
+			end
+
+			current_hp = math.min(current_hp + (max_hp * 0.25), max_hp)
+			memory.write_u16_le(current_hp_addr, current_hp)
 		end
 	},
 	["mp_recovery"] = {
@@ -220,14 +308,27 @@ local shop_items = {
 		name = "MP RECOVER",
 		desc = "Recovers 25% of max mp",
 		func = function(player)
+			local current_mp_addr = nil
+			local max_mp_addr = nil
 			local character_index = character_indexes[player["player_index"]]
-			local current_mp_addr = 0x7E050A + (character_index * character_world_data_size)
-			local max_mp_addr = current_mp_addr + 3
+
+			if is_in_battle() then
+				current_mp_addr = 0x7E200A + (character_index * character_battle_data_size)
+				max_mp_addr = current_mp_addr + 2
+			else
+				current_mp_addr = 0x7E050A + (character_index * character_world_data_size)
+				max_mp_addr = current_mp_addr + 2
+			end
+
 			local current_mp = memory.read_u16_le(current_mp_addr)
 			local max_mp = memory.read_u16_le(max_mp_addr)
 
-			current_mp = math.min(current_mp + (current_mp * 0.25), max_mp)
-			memory.write_u16_le(abp_addr, current_mp)
+			if current_mp == max_mp then
+				return false
+			end
+
+			current_mp = math.min(current_mp + (max_mp * 0.25), max_mp)
+			memory.write_u16_le(current_mp_addr, current_mp)
 		end
 	},
 	["haste"] = {
@@ -285,7 +386,49 @@ local shop_items = {
 			local index = character_indexes[character_name]
 			set_status(index, statuses.reflect)
 		end
-	}
+	},
+	-- this will get the character back up, but they're still frozen and untargetable
+	--["revive"] = {
+	--	cost = 10,
+	--	name = "REVIVE",
+	--	desc = "If dead, instantly revive with 1 hp",
+	--	func = function(player)
+	--		local character_name = player["player_index"]
+	--		local character_index = character_indexes[character_name]
+	--		local base_status_addr = 0x7E201A
+	--		local battle_data_offset = character_battle_data_size * character_index
+	--		local status_addr = base_status_addr + battle_data_offset
+	--		local status = memory.read_u8(status_addr)
+	--
+	--		if bit.band(status, 0x80) then
+	--			-- player is dead. revive them
+	--			memory.write_u8(0x7E2006 + battle_data_offset, 1)
+	--			memory.write_u8(status_addr, status - 0x80)
+	--		else
+	--			return false
+	--		end
+	--	end
+	--}
+	-- need to figure out how to trigger armor recalculation before armor changes take effect
+	--["bonemail"] = {
+	--	cost = 5,
+	--	name = "BONE MAIL",
+	--	desc = "Equip the Bone Mail for this battle.  Only available in battle.",
+	--	func = function(player)
+	--		local bone_mail_index = 0xBF
+	--		local character_name = player["player_index"]
+	--		local index = character_indexes[character_name]
+	--
+	--		local body_equipment_addr = 0x7E200F + (index * character_battle_data_size)
+	--		local current_armor = memory.read_u8(body_equipment_addr)
+	--
+	--		if not is_in_battle() or current_armor == bone_mail_index then
+	--			return false
+	--		end
+	--
+	--		memory.write_u8(body_equipment_addr, bone_mail_index)
+	--	end
+	--}
 	--["status_heal"] = {
 	--	cost = 5,
 	--	name = "STATUS HEAL",
@@ -616,6 +759,10 @@ forms.addclick(video_enabled_checkbox, function()
 end)
 
 function process_video()
+	if true then
+		return
+	end
+
 	if video_enabled and num_players_connected > 0 and get_ms_time() - last_frame_time > 1000 / frames_per_second then
 		last_frame_time = get_ms_time()
 		local frame_file_path = "img/sc.png"
@@ -633,7 +780,11 @@ end
 
 function send_frame(frame_data)
 	for _, player in pairs(players) do
-		player.socket:send(frame_data)
+		local data_length = tostring(string.len(frame_data))
+		while string.len(data_length) < 6 do
+			data_length = "0" .. data_length
+		end
+		player.socket:send("F" .. data_length .. frame_data)
 	end
 end
 
@@ -671,6 +822,9 @@ end
 -- takes a 4 bit value representing whether each of the 4 players is in control
 -- this sort of depends on the order of character_indexes. hopefully that's not a problem?
 function send_control_updates(bits)
+	local all_in_control = true
+	local active_name = ""
+
 	for key, value in pairs(character_indexes) do
 		local bit_mask = 2^value
 		local player = players[key]
@@ -678,10 +832,19 @@ function send_control_updates(bits)
 			local control_value = "0"
 			if bit.band(bits, bit_mask) > 0 then
 				control_value = "1"
+				active_name = player.name
+			else
+				all_in_control = false
 			end
 
 			player.socket:send("I" .. control_value .. "\n")
 		end
+	end
+
+	if all_in_control then
+		forms.settext(in_control_name_label, "Everyone")
+	else
+		forms.settext(in_control_name_label, active_name)
 	end
 end
 
@@ -724,7 +887,8 @@ end
 -- whether the party is currently in battle
 function is_in_battle()
 	local battle_status = memory.read_u8(battle_status_addr)
-	return battle_status ~= 0
+	local battle_over_flag = memory.read_u8(battle_over_flag_addr)
+	return battle_status ~= 0 and battle_over_flag == 0
 end
 
 -- updates the character's name in-game

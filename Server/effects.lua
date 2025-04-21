@@ -1,6 +1,6 @@
 return {
 	exp = {
-		cost = 10,
+		cost = 5,
 		enabled = true
 	},
 	abp = {
@@ -8,31 +8,35 @@ return {
 		enabled = true
 	},
 	heal = {
-		cost = 5,
+		cost = 3,
 		enabled = true
 	},
 	mp_recovery = {
-		cost = 5,
+		cost = 3,
 		enabled = true
 	},
 	haste = {
-		cost = 5,
+		cost = 3,
 		enabled = true
 	},
 	protect = {
-		cost = 5,
+		cost = 3,
 		enabled = true
 	},
 	shell = {
-		cost = 5,
+		cost = 3,
 		enabled = true
 	},
 	reflect = {
-		cost = 5,
+		cost = 3,
 		enabled = true
 	},
-	status_heal = {
-		cost = 5,
+	run = {
+		cost = 3,
+		enabled = true
+	},
+	speed = {
+		cost = 1,
 		enabled = true
 	}
 }

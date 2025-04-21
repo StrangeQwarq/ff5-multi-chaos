@@ -91,7 +91,7 @@ var player_index:String = ""
 var last_input:int = 0
 
 # re-send the current input if the user hasn't pressed anything for some number of seconds
-var no_input_refresh_interval:float = 0.5
+var no_input_refresh_interval:float = 0.25
 
 # how long since the last time the the user's input changed
 var time_since_last_input:float = 0
@@ -101,6 +101,9 @@ var sandworm_clicked_count:int = 0
 var shop_items = []
 
 var current_gregbux:int = 69
+
+var frame_data:PackedByteArray = PackedByteArray()
+var frame_size:int
 
 # log some text to the big TextEdit field
 func client_log(text:String):
@@ -138,6 +141,7 @@ func try_connecting():
 
 
 func _ready() -> void:
+	socket.set_no_delay(true)
 	main_ui.hide()
 	connect_form.show()
 	disconnect_button2.hide()
@@ -180,17 +184,42 @@ func _process(delta:float) -> void:
 		var num_bytes:int = socket.get_available_bytes()
 		if num_bytes > 0:
 			var raw_data: = socket.get_partial_data(num_bytes)
+			var raw_size = raw_data[1].size()
 			var data:String = PackedByteArray(raw_data[1]).get_string_from_ascii()
 
-			if raw_data[1][0] == 0x89:
-				var frame = Image.create(256, 244, false, Image.FORMAT_RGBA8)
-				frame.load_png_from_buffer(raw_data[1])
-				var texture = ImageTexture.create_from_image(frame)
-				video.texture = texture
-				return
+			# Start of frame data
+			#if raw_data[1][0] == "F".to_utf8_buffer()[0]: #0x89:
+				#frame_size = int(data.substr(1, 6))
+				#if num_bytes < frame_size:
+					## Only part of the frame is here
+					## store current data wait for more to come in
+					#var remaining_data_size = frame_size - frame_data.size()
+					#frame_data.append_array(raw_data[1].slice(7))
+				#else:
+					## The whole frame is available
+					#draw_video_frame(raw_data[1].slice(7))
+				#return
+#
+			## Additional frame data
+			#if frame_size > 0 && frame_data.size() <= frame_size:
+				#var stop = true
+				#var remaining_data_size = frame_size - frame_data.size()
+				#if (raw_data.size() <= remaining_data_size):
+					## Still not enough data, but load what we have
+					#frame_data.append_array(raw_data[1])
+				#else:
+					## We have at least enough data for the frame. Load the remaining amount
+					#frame_data.append_array(raw_data[1].slice(0, remaining_data_size))
+					#data = raw_data[1].slice(remaining_data_size)
+					#stop = false
+#
+				#if (frame_data.size() == frame_size):
+					#draw_video_frame(frame_data)
+#
+				#if (stop):
+					#return
 
 			var messages:PackedStringArray = data.split("\n")
-
 			for message in messages:
 				if message.length() == 0:
 					continue
@@ -369,6 +398,15 @@ func server_disconnect(reason:String):
 			client_log("Disconnected (invalid password)")
 		"M":
 			client_log("Disconnected (by client)")
+
+
+func draw_video_frame(frame_data:PackedByteArray):
+	var frame = Image.create(256, 244, false, Image.FORMAT_RGBA8)
+	frame.load_png_from_buffer(frame_data)
+	var texture = ImageTexture.create_from_image(frame)
+	video.texture = texture
+	frame_size = 0
+	frame_data.clear()
 
 
 func set_in_control():

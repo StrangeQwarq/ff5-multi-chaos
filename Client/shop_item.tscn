@@ -8,10 +8,13 @@ bg_color = Color(0.069283, 0.069228, 0.23169, 1)
 
 [node name="Panel" type="Panel"]
 custom_minimum_size = Vector2(0, 75)
+anchors_preset = -1
+anchor_right = 0.419
+anchor_bottom = 0.117
 offset_left = 1.0
 offset_top = 1.0
-offset_right = 483.0
-offset_bottom = 76.0
+offset_right = 0.311951
+offset_bottom = 0.183998
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme = ExtResource("1_glqc6")
@@ -19,21 +22,28 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_wxfep")
 script = ExtResource("2_wxfep")
 
 [node name="ItemName" type="Label" parent="."]
-layout_mode = 0
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 0.784
+anchor_bottom = 0.373
 offset_left = 8.0
 offset_top = 1.0
-offset_right = 185.0
-offset_bottom = 28.0
+offset_right = -192.888
+offset_bottom = 0.0249977
 theme = ExtResource("1_glqc6")
 theme_override_font_sizes/font_size = 26
 text = "Placeholder Name"
 
 [node name="ItemDescription" type="Label" parent="."]
-layout_mode = 0
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.373
+anchor_right = 0.811
+anchor_bottom = 1.0
 offset_left = 8.0
-offset_top = 28.0
-offset_right = 391.0
-offset_bottom = 74.0
+offset_top = 0.0249977
+offset_right = 0.0979614
+offset_bottom = -1.0
 theme = ExtResource("1_glqc6")
 theme_override_colors/font_color = Color(0.856067, 0.856067, 0.856067, 1)
 theme_override_font_sizes/font_size = 18
@@ -41,22 +51,29 @@ text = "Placeholder Description Placeholder Description Placeholder Description"
 autowrap_mode = 3
 
 [node name="ItemCost" type="Label" parent="."]
-layout_mode = 0
-offset_left = 243.0
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_right = 0.778
+anchor_bottom = 0.36
+offset_left = 2.0
 offset_top = 4.0
-offset_right = 336.0
-offset_bottom = 27.0
+offset_right = -38.996
 theme = ExtResource("1_glqc6")
 theme_override_font_sizes/font_size = 22
 text = "Cost:  10 GB"
 
 [node name="BuyButton" type="Button" parent="."]
-layout_mode = 0
-offset_left = 393.0
-offset_top = 20.0
-offset_right = 465.0
-offset_bottom = 57.0
-focus_mode = 1
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.815
+anchor_top = 0.267
+anchor_right = 0.965
+anchor_bottom = 0.76
+offset_left = 0.169983
+offset_top = -0.0250015
+offset_right = -0.130005
+focus_mode = 0
 theme = ExtResource("1_glqc6")
 text = "Buy"
 
