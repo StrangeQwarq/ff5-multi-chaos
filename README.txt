@@ -10,7 +10,7 @@ Host Requirements:
 - Bizhawk 2.8 (2.9+ will not work)
 - SNES ROM of Final Fintasy V
 - (possibly) port forwarding capability
-- A method of streaming Bizhawk with low latency (such as discord)
+- (currently) A method of streaming Bizhawk with low latency (such as discord)
 - server scripts (ff5_multi_chaos.lua and socket.lua)
 
 Player Requirements:
@@ -36,18 +36,28 @@ address to connect to. If you're not sure what your IP address is, many online
 services will tell you, such as https://whatismyipaddress.com/
 
 Finally, click the Start Server button. Players will be able to connect now.
-When players are connected, the host will most likely need to stream a video
-of the game, since this system currently has no support for sending information
-about the game state to the players. The easiest way to accomplish this is with
-a discord stream, since they have fairly low latency. If the host wants to
-participate in the game, they will also need to setup the client.
+When players are connected, the host will most likely want to stream a video
+of the game. The easiest way to accomplish this is with a discord stream, since 
+they have fairly low latency. If the host wants to participate in the game, they 
+will also need to setup the client.
 
 Whenever a player connects one of the four buttons will populate with their player
 and character name. Clicking the button will forcefully disconnect that player.
 
-Below the buttons is a checkbox labeled "Lower Encounter Rate". When checked the
+Below the buttons is a checkbox labeled "Fewer Battles". When checked the
 party will be much less likely to get into random battles. This can be useful
-for speeding the game along if needed.
+for speeding the game along if needed. Below that is the "Show Input" checkbox,
+which displays in the top right which buttons each player is currently pressing.
+
+The last button, "Send Video", is currently disabled on both server and client
+until stability issues are addressed. When enabled, this will stream a crude video
+with low latency directly to each client, allowing for players to see what's 
+happening without relying on a separate service.
+
+Beside the buttons are the point counts. Each time players enter battle, they're
+awarded one point (or GregBux) that can be used to purchase effects in the shop.
+These effects are listed in the file effects.lua. Hosts can customize which affects
+are available and how many points each costs by editing this file.
 
 ---------------------------------------------
 
@@ -94,10 +104,3 @@ in control. In battle control is a little more complex.
   gain control for that turn.
   
 ---------------------------------------------
-
-Planned Changes:
-
-When players participate in a winning battle each character is awarded some number of points
-based on the EXP and Gil obtained from the battle. These points can later be redeemed for
-various bonuses like extra EXP, ABP, temporary buffs, heals, MP recovery, status recovery
-and more.
