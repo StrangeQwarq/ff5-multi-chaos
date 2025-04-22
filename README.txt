@@ -21,10 +21,13 @@ Player Requirements:
 
 Host Setup:
 
-First, open Bizhawk and the Final Fantasy V ROM. Next, open the Lua console
-under Tools. Then navigate to the server folder in the provided files and
-open the ff5_multi_chaos.lua script. Under the Config menu, select Customize...
-and open the Advanced tab. Make sure the selected Lua Core is Lua+LuaInterface.
+First open Bizhawk and, under the Config menu, select Customize and open the 
+Advanced tab. Make sure the selected Lua Core is Lua+LuaInterface. Next, in 
+the menu Config -> Cores -> SNES, ensure the BSNES core is selected. You may
+need to restart Bizhawk after changing either of these. Then load your Final 
+Fantasy V ROM and open the Lua console under the Tools menu. Click Open Script
+under the Script menu and select the file ff5_multi_chaos.lua provided in the
+Server folder.
 
 A window with several controls should pop up. Enter a value between 1 and 
 65535 in the Server Port field and (optionally) choose a password that players
@@ -41,7 +44,7 @@ of the game. The easiest way to accomplish this is with a discord stream, since
 they have fairly low latency. If the host wants to participate in the game, they 
 will also need to setup the client.
 
-Whenever a player connects one of the four buttons will populate with their player
+Whenever a player connects, one of the four buttons will populate with their player
 and character name. Clicking the button will forcefully disconnect that player.
 
 Below the buttons is a checkbox labeled "Fewer Battles". When checked the
@@ -61,7 +64,7 @@ are available and how many points each costs by editing this file.
 
 ---------------------------------------------
 
-Client Setup:
+Player Setup:
 
 The client is a standalone Windows executable. Enter the IP address, port and
 password supplied to you by the host in the appropriate fields, choose a player
